@@ -11,7 +11,15 @@ document.querySelectorAll('[data-project]').forEach(btn=>btn.addEventListener('c
  const p=projects[Number(btn.dataset.project)];if(!p)return;
  document.querySelectorAll('[data-project]').forEach(b=>{const selected=b===btn;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
  const panelName=(p.folder==='vlan-segmentation'||p.folder==='wireshark-analysis')?p.folder:'other';
- panels.forEach(panel=>{panel.hidden=panel.dataset.panel!==panelName;});
+ panels.forEach(panel=>{
+   const selected=panel.dataset.panel===panelName;
+   panel.hidden=!selected;
+   if(selected){
+     panel.classList.remove('panel-arrive');
+     void panel.offsetWidth;
+     panel.classList.add('panel-arrive');
+   }
+ });
  if(panelName==='other'){
   document.getElementById('file-title').textContent=p.folder+'/README.md';
   document.getElementById('command').textContent='cat '+p.folder+'/README.md';
