@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build && cp -R assets dist/assets && cp _headers dist/_headers",
+    "build": "tsc --noEmit && vite build && cp -R assets/. dist/assets/ && cp _headers dist/_headers",
     "preview": "vite preview"
   },
   "dependencies": {
