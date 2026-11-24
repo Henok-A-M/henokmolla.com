@@ -1,0 +1,11 @@
+
+.group{position:absolute;inset:0;opacity:0;visibility:hidden;will-change:opacity,transform;pointer-events:none}
+.card{position:absolute;width:calc(330 * var(--u));border:1px solid var(--glass-edge);border-radius:calc(28 * var(--u));background:var(--card-fill);box-shadow:0 calc(16 * var(--u)) calc(50 * var(--u)) rgba(0,20,45,.12);overflow:hidden;isolation:isolate}
+.card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--card-tint)}
+.blur{position:absolute;z-index:0;max-width:none;pointer-events:none}
+.left{left:calc(28 * var(--u));top:22%}
+.right{right:calc(29 * var(--u));top:49%}
+.content{position:relative;z-index:2;padding:calc(24 * var(--u)) calc(24 * var(--u)) calc(40 * var(--u))}
+.content h3{font-size:calc(28 * var(--u));line-height:1.21;font-weight:400;margin-bottom:calc(10 * var(--u))}
+.content p{font-size:calc(18 * var(--u));line-height:1.2;font-weight:400}
+@media(max-width:1023px){.left{left:calc(18 * var(--u));top:16%}.right{right:calc(18 * var(--u));top:39%}.card{max-width:calc(100% - 36 * var(--u))}.content{padding:calc(20 * var(--u)) calc(20 * var(--u)) calc(28 * var(--u))}.content h3{font-size:calc(24 * var(--u))}.content p{font-size:calc(16 * var(--u))}}
