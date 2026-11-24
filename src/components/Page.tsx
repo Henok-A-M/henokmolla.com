@@ -72,7 +72,6 @@ export default function Page(){
   const ctx=gsap.context(()=>{
     ScrollTrigger.config({ignoreMobileResize:true});
     const state=portal.current;
-    const readyWords=Array.from(st.querySelectorAll<HTMLElement>('[data-ready="text"] [data-word]'));
     const readyCard=st.querySelector<HTMLElement>('[data-ready="card"]');
     const readyFloat=st.querySelector<HTMLElement>('[data-ready="card-float"]');
     const readyImage=st.querySelector<HTMLElement>('[data-ready="card-image"]');
