@@ -9,6 +9,49 @@ const point=(lat:number,lon:number):V=>[Math.cos(lat)*Math.sin(lon),Math.sin(lat
 const dots=Array.from({length:220},(_,i)=>{const y=1-2*(i+.5)/220;return point(Math.asin(y),i*2.39996323)});
 const edges=dots.flatMap((a,i)=>dots.slice(i+1).map((b,j)=>({i,j:i+j+1,d:Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])})).filter(e=>e.d<.31));
 const initial=()=>nodes.some(n=>n.id===location.hash.slice(1))?location.hash.slice(1):"";
+const earthVideo = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_104036_bd6924f6-3c8e-417e-8465-6d03c8c2e9e6.mp4";
+const earthPoster = "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/82e7eb75-c65f-490a-99b5-f3d1cad54200.webp";
+
+function EarthBackdrop({ paused }: { paused: boolean }) {
+ const first = useRef<HTMLVideoElement>(null);
+ const second = useRef<HTMLVideoElement>(null);
+ useEffect(() => {
+   const a = first.current, b = second.current;
+   if (!a || !b) return;
+   const preference = matchMedia("(prefers-reduced-motion: reduce)");
+   let current = a, next = b, timer = 0, disposed = false, switching = false;
+   function sync() {
+     if (!a || !b) return;
+     if (paused || preference.matches || document.hidden) {
+       a.pause(); b.pause();
+     } else { void current.play().catch(() => {}); }
+   }
+   async function tick() {
+     if (switching || current.paused || !current.duration || current.duration - current.currentTime > 1.1 || next.readyState < 2) return;
+     switching = true;
+     const outgoing = current, incoming = next;
+     incoming.currentTime = 0;
+     try { await incoming.play(); } catch { switching = false; return; }
+     if (disposed) return;
+     incoming.style.opacity = "1"; outgoing.style.opacity = "0";
+     current = incoming; next = outgoing;
+     timer = window.setTimeout(() => { outgoing.pause(); outgoing.currentTime = 0; switching = false; }, 900);
+   }
+   a.style.opacity = "1"; b.style.opacity = "0";
+   sync();
+   a.addEventListener("timeupdate", tick); b.addEventListener("timeupdate", tick);
+   preference.addEventListener("change", sync); document.addEventListener("visibilitychange", sync);
+   return () => {
+     disposed = true; clearTimeout(timer); a.pause(); b.pause();
+     a.removeEventListener("timeupdate", tick); b.removeEventListener("timeupdate", tick);
+     preference.removeEventListener("change", sync); document.removeEventListener("visibilitychange", sync);
+   };
+ }, [paused]);
+ return <div aria-hidden="true" style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:-1,background:`#060710 url(${earthPoster}) center / cover no-repeat`}}>
+   {[first,second].map((ref,i)=><video key={i} ref={ref} muted playsInline loop preload="auto" poster={earthPoster} src={earthVideo} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"51% 8%",opacity:i===0?1:0,transition:"opacity .9s linear"}}/>)}
+   <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(3,7,16,.75),transparent 38%,transparent 67%,rgba(3,7,16,.65))"}}/>
+ </div>;
+}
 export default function Network(){
  const [active,setActive]=useState(initial),[paused,setPaused]=useState(false),[focused,setFocused]=useState("");const canvas=useRef<HTMLCanvasElement>(null),stage=useRef<HTMLDivElement>(null),labels=useRef<(HTMLButtonElement|null)[]>([]),content=useRef<HTMLDivElement>(null),panel=useRef<HTMLDivElement>(null),readout=useRef<HTMLSpanElement>(null),meter=useRef<HTMLDivElement>(null);
  const motion=useRef({yaw:-.6,pitch:.12,zoom:1,targetZoom:1,drag:false,lastX:0,lastY:0,active:"",paused:false,targetYaw:-.6,targetPitch:.12,focus:"",points:[] as {id:string;x:number;y:number;z:number}[],touches:new Map<number,{x:number;y:number}>(),pinch:0});
@@ -37,7 +80,7 @@ export default function Network(){
    raf=requestAnimationFrame(render);
   };raf=requestAnimationFrame(render);return()=>{cancelAnimationFrame(raf);ro.disconnect();host.removeEventListener("wheel",stopWheel)};
  },[]);
- return <main className="network-app" data-open={!!active}>
+ return <main className="network-app" data-open={!!active} style={{isolation:"isolate",background:"transparent"}}><EarthBackdrop paused={paused} />
   <header className="network-header"><button className="network-brand" onClick={reset}><span className="brand-icon">HM</span><span>HENOK MOLLA<small>NETWORK / SECURITY</small></span></button><nav aria-label="Portfolio sections"><button className={!active?"selected":""} onClick={reset}>Overview</button>{nodes.map(n=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}>{n.id==="about"?"About":n.name}</button>)}</nav><a className="header-git" href="https://github.com/Henok-A-M" target="_blank" rel="noreferrer">GitHub</a></header>
   <div className="network-layout"><section className="network-intro profile-console"><div className="eyeline"><i/> PERSONAL NETWORK · ONLINE</div><button className="profile-portrait" onClick={()=>select("about")} aria-label="Open about Henok"><img src={portrait} alt="Henok Molla"/><span className="portrait-corner corner-tl"/><span className="portrait-corner corner-br"/></button><h1>Henok Molla.</h1><p className="profile-role">Aspiring Network &amp; Cybersecurity Engineer</p><p className="profile-location">Seattle · Year Up United<br/>City University of Seattle</p><button className="profile-about" onClick={()=>select("about")}>About me <span>＋</span></button><p className="profile-hint">Rotate the sphere. Zoom toward a node to explore my network.</p></section>
    <div className="network-stage" ref={stage} onPointerDown={e=>{if(e.pointerType!=="touch"&&(e.target as HTMLElement).closest("button"))return;const m=motion.current;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(m.focus){m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onWheel={e=>zoomAt(-e.deltaY*.0025,e.clientX,e.clientY,(e.target as HTMLElement).closest<HTMLElement>("[data-node]")?.dataset.node)}>
