@@ -142,7 +142,7 @@ export default function Hero(){
       <h2>Understand.<br/><em>Then protect.</em></h2>
       <p className={styles.storyLead}>Packet analysis, VLAN segmentation, and troubleshooting are helping me build the foundation for a future in network engineering and cybersecurity.</p>
      </div>
-     <div className={styles.interactionHint}>MOVE YOUR CURSOR ACROSS THE LOG <span>·</span> REVEAL WHAT'S BENEATH</div>
+     <div className={styles.interactionHint}><span className={styles.pointerInstruction}>MOVE YOUR CURSOR ACROSS THE LOG · REVEAL WHAT'S BENEATH</span><span className={styles.touchInstruction}>SCROLL TO KEEP EXPLORING</span></div>
      <div className={styles.storyCounter}>02 — 05</div>
      <div ref={wipe} className={styles.storyWipe} aria-hidden="true"/>
     </div>

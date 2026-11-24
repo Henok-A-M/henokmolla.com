@@ -52,9 +52,9 @@
 .storyLead{font-size:clamp(13px,1.2vw,17px);line-height:1.75;max-width:445px;width:fit-content;padding:13px 16px;background:rgba(9,40,69,.29);border:1px solid rgba(231,249,255,.21);border-radius:14px;backdrop-filter:blur(8px);box-shadow:0 12px 30px #0f487720}
 .secondStory{left:auto;right:5%;text-align:right;top:25%}
 .secondStory .storyLead{margin-left:auto}
-.interactionHint{position:absolute;z-index:4;bottom:40px;left:5%;font-size:10px;letter-spacing:.16em;color:#e3f7ff;text-shadow:0 1px 9px #0e4879}
+.interactionHint{position:absolute;z-index:4;bottom:36px;left:5%;font-size:10px;letter-spacing:.12em;color:#143d5b;text-shadow:none;padding:10px 14px;background:rgba(228,247,255,.78);border:1px solid #ffffffa8;border-radius:99px;backdrop-filter:blur(12px)}.touchInstruction{display:none}
 .interactionHint span{padding:0 6px}
-.storyCounter{position:absolute;z-index:4;bottom:40px;right:5%;font-size:11px;letter-spacing:.08em;color:#e3f7ff}
+.storyCounter{position:absolute;z-index:4;bottom:36px;right:5%;font-size:11px;letter-spacing:.08em;color:#184461;background:rgba(229,247,255,.72);border:1px solid #ffffff9d;padding:10px 12px;border-radius:99px}
 .storyWipe{position:absolute;z-index:8;inset:0;clip-path:circle(0% at 50% 52%);pointer-events:none;background:#f4f8fd}
 @keyframes orbitMove{to{transform:translate3d(-12px,18px,0) rotate(7deg)}}
 @keyframes loadTrack{to{transform:scaleX(1)}}
@@ -97,3 +97,5 @@
 }
 @media(max-height:680px) and (min-width:801px){.introInner{padding-top:90px;padding-bottom:55px}.headline{margin:17px 0}.skillPills{margin-top:21px}.scrollHint{bottom:13px}}
 @media(prefers-reduced-motion:reduce){.orbit{animation:none}.preloaderTrack span{animation:none;transform:scaleX(1)}.primaryButton,.secondaryButton{transition:none}}
+
+@media(hover:none){.pointerInstruction{display:none}.touchInstruction{display:inline}}
