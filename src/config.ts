@@ -1,0 +1,12 @@
+export const FRAME_COUNT = 120;
+export const ASSET_ROOT = "https://assets.uberdesigner.ai/alpha-project";
+export const colorURL = (n: number) => `${ASSET_ROOT}/cave-${String(n).padStart(3,"0")}.jpg`;
+export const depthURL = (n: number) => `${ASSET_ROOT}/depth-${String(n).padStart(3,"0")}.webp`;
+export const SCROLL_SMOOTHING = 0.09;
+export const DEPTH_STRENGTH = { x: 0.0144, y: 0.0108 };
+export const POINTER_SMOOTHING = 0.055;
+export const CURSOR_SMOOTHING = 0.2;
+export const TIMING = { hero: { exit: [0.16,0.28] as const }, mid: { enter: [0.38,0.46] as const, exit: [0.58,0.68] as const }, cards: { enter: [0.76,0.84] as const }, final: { enter: [0.82,0.90] as const }};
+export const ENTER_RISE = 24, EXIT_LIFT = -16;
+export const MIN_LOADER_MS = 1500, LOADER_TIMEOUT_MS = 8000, BURN_MS = 1150, INTRO_AT_MS = 760;
+export const PILL_BLUR = 16, CARD_BLUR = 24;
