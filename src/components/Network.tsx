@@ -13,7 +13,7 @@ const initial=()=>nodes.some(n=>n.id===location.hash.slice(1))?location.hash.sli
 import GradientBackdrop from './GradientBackdrop';
 export default function Network(){
  const [active,setActive]=useState(initial),[paused,setPaused]=useState(false),[focused,setFocused]=useState("");const canvas=useRef<HTMLCanvasElement>(null),stage=useRef<HTMLDivElement>(null),labels=useRef<(HTMLButtonElement|null)[]>([]),content=useRef<HTMLDivElement>(null),panel=useRef<HTMLDivElement>(null),readout=useRef<HTMLSpanElement>(null),meter=useRef<HTMLDivElement>(null);
- const motion=useRef({yaw:-.6,pitch:.12,zoom:1,targetZoom:1,drag:false,lastX:0,lastY:0,active:"",paused:false,targetYaw:-.6,targetPitch:.12,focus:"",points:[] as {id:string;x:number;y:number;z:number}[],touches:new Map<number,{x:number;y:number}>(),pinch:0});
+ const motion=useRef({yaw:-.6,pitch:.12,zoom:1,targetZoom:1,drag:false,moved:false,startX:0,startY:0,lastX:0,lastY:0,active:"",paused:false,targetYaw:-.6,targetPitch:.12,focus:"",points:[] as {id:string;x:number;y:number;z:number}[],touches:new Map<number,{x:number;y:number}>(),pinch:0});
  const select=(id:string)=>{motion.current.focus="";setFocused("");setActive(id);history.replaceState(null,"",id?`#${id}`:location.pathname+location.search);};
  const aim=(id:string)=>{const m=motion.current,n=nodes.find(n=>n.id===id);if(!n)return;m.focus=id;setFocused(id);m.targetYaw=m.yaw+Math.atan2(Math.sin(-n.lon-m.yaw),Math.cos(-n.lon-m.yaw));m.targetPitch=n.lat;};
  const zoomAt=(amount:number,x?:number,y?:number,nodeId?:string)=>{const m=motion.current;if(m.active){if(amount<0)select("");return;}if(amount>0&&!m.focus&&nodeId)aim(nodeId);if(amount>0&&!m.focus&&x!==undefined&&y!==undefined&&stage.current){const rect=stage.current.getBoundingClientRect();const nearest=m.points.map(p=>({...p,d:Math.hypot(p.x-(x-rect.left),p.y-(y-rect.top))})).sort((a,b)=>a.d-b.d)[0];if(nearest&&nearest.d<Math.max(105,rect.width*.17))aim(nearest.id);}m.targetZoom=Math.max(.5,Math.min(2.35,m.targetZoom+amount));if(m.targetZoom<=1){m.focus="";setFocused("");}};
@@ -100,11 +100,54 @@ export default function Network(){
  },[]);
  return <main className="network-app" data-open={!!active} style={{isolation:"isolate",background:"transparent"}}><GradientBackdrop paused={paused} />
   <header className="network-header"><button className="network-brand" onClick={reset}><span className="brand-icon">HM</span><span>HENOK MOLLA<small>NETWORK / SECURITY</small></span></button><nav aria-label="Portfolio sections"><button className={!active?"selected":""} onClick={reset}>Overview</button>{nodes.map(n=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}>{n.id==="about"?"About":n.name}</button>)}</nav><a className="header-git" href="https://github.com/Henok-A-M" target="_blank" rel="noreferrer">GitHub</a></header>
-  <div className="network-layout"><section className="network-intro profile-console"><div className="eyeline"><i/> PERSONAL NETWORK · ONLINE</div><button className="profile-portrait" onClick={()=>select("about")} aria-label="Open about Henok"><img src={portrait} alt="Henok Molla"/><span className="portrait-corner corner-tl"/><span className="portrait-corner corner-br"/></button><h1>Henok Molla.</h1><p className="profile-role">Aspiring Network &amp; Cybersecurity Engineer</p><p className="profile-location">Seattle · Year Up United<br/>City University of Seattle</p><button className="profile-about" onClick={()=>select("about")}>About me <span>＋</span></button><p className="profile-hint">Rotate the sphere. Zoom toward a node to explore my network.</p></section>
-   <div className="network-stage" ref={stage} onPointerDown={e=>{if(e.pointerType!=="touch"&&(e.target as HTMLElement).closest("button"))return;const m=motion.current;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(m.focus){m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onWheel={e=>zoomAt(-e.deltaY*.0025,e.clientX,e.clientY,(e.target as HTMLElement).closest<HTMLElement>("[data-node]")?.dataset.node)}>
-    <canvas ref={canvas} aria-hidden="true"/><div className="scene-hud" aria-hidden="true"><span>{focused?"TARGET ACQUIRED":"NETWORK EXPLORER"}</span><span>MAGNIFICATION <b ref={readout}>100%</b></span><div className="scene-meter"><div ref={meter}/></div></div><div className="sphere-axis" aria-hidden="true"><span>HM</span><small>NETWORK CORE</small></div>{nodes.map((n,i)=><button ref={el=>{labels.current[i]=el}} className={`sphere-node ${active===n.id?"active":""} ${focused===n.id?"focused":""}`} key={n.id} data-node={n.id} onClick={()=>{if(focused===n.id){select(n.id)}else{aim(n.id);motion.current.targetZoom=Math.max(1.5,motion.current.targetZoom)}}} onDoubleClick={()=>select(n.id)}><i/><span>{n.name}<small>{n.sub}</small>{focused===n.id&&<strong>ZOOM IN TO OPEN</strong>}</span></button>)}<div className="sphere-caption"><span>NETWORK CORE / 05 NODES</span><span>{focused?`EXPLORING ${nodes.find(n=>n.id===focused)?.name.toUpperCase()} · ZOOM TO OPEN`:"DRAG TO ROTATE · SCROLL OR PINCH TO EXPAND"}</span></div>
+  <div className="network-layout"><section className="network-intro profile-console"><div className="eyeline"><i/> PERSONAL NETWORK · ONLINE</div><button className="profile-portrait" onClick={()=>select("about")} aria-label="Open about Henok"><img src={portrait} alt="Henok Molla"/><span className="portrait-corner corner-tl"/><span className="portrait-corner corner-br"/></button><h1>Henok Molla.</h1><p className="profile-role">Aspiring Network &amp; Cybersecurity Engineer</p><p className="profile-location">Seattle · Year Up United<br/>City University of Seattle</p><button className="profile-about" onClick={()=>select("about")}>About me <span>＋</span></button></section>
+   <div className="network-stage" ref={stage} style={{userSelect:"none", WebkitUserSelect:"none"}}
+     onDragStart={event => event.preventDefault()}
+     onClickCapture={event => {
+       if (event.detail && motion.current.moved) {
+         event.preventDefault();
+         event.stopPropagation();
+       }
+     }}
+     onPointerDown={event => {
+       if (event.button !== 0) return;
+       const m = motion.current;
+       m.touches.set(event.pointerId, {x:event.clientX, y:event.clientY});
+       m.startX = m.lastX = event.clientX;
+       m.startY = m.lastY = event.clientY;
+       m.moved = m.touches.size > 1;
+       m.drag = true;
+       if (m.touches.size === 2) {
+         const [a,b] = [...m.touches.values()];
+         m.pinch = Math.hypot(a.x-b.x, a.y-b.y);
+       }
+       if (!(event.target as HTMLElement).closest("button")) event.currentTarget.setPointerCapture(event.pointerId);
+     }}
+     onPointerMove={event => {
+       const m = motion.current;
+       if (!m.touches.has(event.pointerId)) return;
+       m.touches.set(event.pointerId, {x:event.clientX, y:event.clientY});
+       if (m.touches.size === 2) {
+         const [a,b] = [...m.touches.values()];
+         const distance = Math.hypot(a.x-b.x, a.y-b.y);
+         if (m.pinch) zoomAt((distance-m.pinch)*.008, (a.x+b.x)/2, (a.y+b.y)/2);
+         m.pinch = distance;
+         return;
+       }
+       if (!m.drag || (!m.moved && Math.hypot(event.clientX-m.startX,event.clientY-m.startY)<5)) return;
+       m.moved = true;
+       if (!event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.setPointerCapture(event.pointerId);
+       if (m.focus) { m.focus=""; setFocused(""); }
+       m.yaw += (event.clientX-m.lastX)*.007;
+       m.pitch = Math.max(-1.3, Math.min(1.3, m.pitch+(event.clientY-m.lastY)*.007));
+       m.lastX = event.clientX;
+       m.lastY = event.clientY;
+     }}
+     onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}}
+     onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onWheel={e=>zoomAt(-e.deltaY*.0025,e.clientX,e.clientY,(e.target as HTMLElement).closest<HTMLElement>("[data-node]")?.dataset.node)}>
+    <canvas ref={canvas} aria-hidden="true"/><div className="scene-hud" aria-hidden="true"><span>{focused?"TARGET ACQUIRED":"NETWORK EXPLORER"}</span><span>MAGNIFICATION <b ref={readout}>100%</b></span><div className="scene-meter"><div ref={meter}/></div></div><div className="sphere-axis" aria-hidden="true"><span>HM</span><small>NETWORK CORE</small></div>{nodes.map((n,i)=><button ref={el=>{labels.current[i]=el}} className={`sphere-node ${active===n.id?"active":""} ${focused===n.id?"focused":""}`} key={n.id} data-node={n.id} onClick={()=>{if(focused===n.id){select(n.id)}else{aim(n.id);motion.current.targetZoom=Math.max(1.5,motion.current.targetZoom)}}} onDoubleClick={()=>select(n.id)}><i/><span>{n.name}<small>{n.sub}</small></span></button>)}<div className="sphere-caption"><span>NETWORK CORE / 05 NODES</span></div>
    </div><aside className="network-side"><span className="side-kicker">SYSTEM INDEX</span>{nodes.map((n,i)=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}><span>0{i+1}</span><div>{n.name}<small>{n.sub}</small></div><b>＋</b></button>)}<div className="network-controls"><button onClick={()=>{const m=motion.current;if(!m.focus){const nearest=[...m.points].sort((a,b)=>b.z-a.z)[0];if(nearest)aim(nearest.id);}zoomAt(.4)}} aria-label="Zoom in">＋</button><button onClick={()=>zoomAt(-.4)} aria-label="Zoom out">−</button><button onClick={()=>setPaused(p=>!p)}>{paused?"Resume":"Pause"}</button><button onClick={reset}>Reset view</button></div></aside>
-  </div><div ref={panel} className="network-panel" aria-hidden={!active} inert={!active}><div className="panel-top"><span>HM / {nodes.find(n=>n.id===active)?.name.toUpperCase()}</span><button onClick={returnToNetwork} title="Return to network (Esc or −)">− Zoom out to network</button></div><div className="legacy-content network-content" data-section={active} ref={content} dangerouslySetInnerHTML={portfolioMarkup}/></div>
+  </div><div ref={panel} className="network-panel" aria-hidden={!active} inert={!active}><div className="panel-top"><span>HM / {nodes.find(n=>n.id===active)?.name.toUpperCase()}</span><button onClick={returnToNetwork}>− Zoom out to network</button></div><div className="legacy-content network-content" data-section={active} ref={content} dangerouslySetInnerHTML={portfolioMarkup}/></div>
   <footer className="network-footer"><span>HENOK MOLLA © 2026</span><span>BUILT TO LEARN. DESIGNED TO CONNECT.</span><button onClick={()=>select("contact")}>LET'S CONNECT</button></footer>
  </main>
 }
