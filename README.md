@@ -1,25 +1,20 @@
-# Henok Molla — Portale-Inspired Portfolio
+# Henok Molla — Easylog-Inspired Portfolio
 
-A cinematic personal website using **Vite + React 19 + strict TypeScript + GSAP 3.15 / ScrollTrigger**.
+A fully responsive personal portfolio with an interactive hero based on the provided **Easylog** design prompt, using **Vite, React 19, strict TypeScript, GSAP 3.15, and Canvas 2D**.
 
-## Design and interaction
+## The hero
 
-The opening experience uses the Portale visual references supplied by the site owner:
+- A full-screen sky-blue gradient and the original paired 2752 × 1536 transparent log artworks.
+- A pixelated 64 → 1 CSS-pixel intro that sharpens while the log settles from 2.6× zoom.
+- A real image-byte-based percentage counter, waiting for the two decoded images and the Instrument Sans/Instrument Serif font faces.
+- A GSAP introduction for the glass navigation, character-by-character headline, lead, bottom bar and CTA.
+- On mouse devices, the bare log grows moss where the pointer moves. Motion stamps are spaced independently of frame rate; resting stamps keep moss under the pointer. Each stamp fades exponentially to avoid permanent trails.
+- On touch devices, the full mossy artwork shows. Reduced-motion preferences skip the counter, pixelation and zoom.
+- A custom trailing glass cursor on supported pointer devices.
 
-- Sunset desert image with illuminated translucent card, and a perspective-correct portal mapped to the original image's card corners.
-- White percentage preloader and a growing center-origin photo entrance.
-- Word-by-word animated network-security headline and professionally styled navigation.
-- Pinned scroll transition that turns the portal toward the visitor, expands its white edge, and reveals a second bright screen with a floating pale-blue card.
-- Pointer-responsive tilt on supported devices, glass cursor, reversible scrolling, and reduced-motion fallback.
-- The complete personal portfolio remains below the interactive introduction: real About Me, 8 skill cards, 13 projects, VLAN illustration, Wireshark screenshots, My Journey, and contact buttons.
+The new hero preserves the supplied Easylog copy and assets. The sections **below** the hero remain Henok's actual About, Skills, Projects, My Journey and Contact content, including the professional portrait, eight skill cards, 13 project folders, screenshots and interactive labs. Navigation points to those working sections.
 
-**The site is Henok Molla's portfolio, not a banking product.** Visual source imagery is provided by Uberdesigner/Portale; copy and navigation describe Henok's actual work and studies.
-
-## Resolution
-
-The provided desert asset is **4096 × 2640** and the floating card asset **1440 × 810**. Both use their full supplied resolution, with responsive layouts and normal browser scaling. These are *not native 8K images*; higher-detail source art would be required for true 8K native image fidelity.
-
-## Develop and deploy
+## Development
 
 ```bash
 npm install
@@ -27,12 +22,12 @@ npm run dev
 npm run build
 ```
 
-Cloudflare Pages: build command `npm run build`, publish directory `dist`. This copies `assets/` and `_headers` into the deployment, preserving CSP and original evidence imagery.
+Cloudflare Pages: build command `npm run build`, output directory `dist`. The build also copies `assets/` and security `_headers` into the published folder.
 
-## Notes
+## Image quality
 
-- Interactive visuals use referenced external assets, including `desert.webp`, `bank-card.webp`, and card SVGs.
-- Image fetches report progress and decode before use. If assets fail, the intro still opens.
-- React effects and GSAP contexts clean up under StrictMode.
-- The Year Up United email is not published. Organization links are limited to their names in the My Journey section; logos remain unlinked.
-- The `portale-8k-rebuild` Git branch holds the preview work, while the main branch remains the production site.
+The provided log images are **2752 × 1536**, rendered at up to 2× the device pixel ratio. The code does not invent extra image detail or claim native 8K source resolution.
+
+## Privacy and organization links
+
+The Year Up United school email is not published. As requested, the organization names link out only in the My Journey section; their logos are visible but not links.
