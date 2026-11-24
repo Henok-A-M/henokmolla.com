@@ -101,3 +101,15 @@ html,body{background:#050d18!important;color:#eaf6ff;scroll-behavior:auto}body{f
 @media (prefers-reduced-motion: reduce) {
   .network-panel, .network-side > button > div { transition: none; }
 }
+
+.network-content .lab-group-title { margin: 20px 0 10px; }
+.network-content .planned-projects { margin-block: 12px 20px; }
+.network-content .planned-projects summary { width: fit-content; color: #b8d5de; cursor: pointer; padding: 10px 0; }
+.network-content .folder[hidden] { display: none !important; }
+@media (max-width: 650px) {
+  .network-app[data-open=true] .network-header { min-height: 48px; padding: 4px 2%; justify-content: center; }
+  .network-app[data-open=true] .network-brand, .network-app[data-open=true] .header-git { display: none; }
+  .network-app[data-open=true] .network-header nav { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; justify-content: flex-start; }
+  .network-app[data-open=true] .network-header nav button { min-height: 40px; flex-shrink: 0; }
+  .network-app[data-open=true] .network-panel { top: 48px; }
+}

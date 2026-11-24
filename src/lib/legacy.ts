@@ -174,6 +174,8 @@ export function initLegacy(root:HTMLElement):()=>void{
     search.setAttribute("aria-label", search.placeholder);
     library.actions.before(search);
     const folders = all<HTMLButtonElement>("[data-project]");
+    const plannedList = root.querySelector<HTMLDetailsElement>(".planned-projects");
+    const labsTitle = root.querySelector<HTMLElement>(".lab-group-title");
     let group = "All";
     const filter = () => {
       const query = search.value.trim().toLowerCase();
@@ -193,6 +195,12 @@ export function initLegacy(root:HTMLElement):()=>void{
           selected ||= button.classList.contains("active");
         }
       }
+      const matchingPlans = folders.filter(button => !button.hidden && button.closest(".planned-projects")).length;
+      if (plannedList) {
+        plannedList.hidden = matchingPlans === 0;
+        plannedList.open = matchingPlans > 0 && (group === "Planned" || !!query);
+      }
+      if (labsTitle) labsTitle.hidden = count === matchingPlans;
       if (!count) panels.forEach(panel => panel.hidden = true);
       else if (!selected || panels.every(panel => panel.hidden)) first?.click();
       library.output.textContent = count ? count + (count === 1 ? " project" : " projects") : "No matching projects. Try another term or choose All.";
