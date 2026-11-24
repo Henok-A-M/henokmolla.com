@@ -82,14 +82,16 @@
  .storyCounter{right:6%}
 }
 @media(max-width:430px){
- .introInner{padding:100px 19px 65px}
+ .introInner{padding:96px 19px 50px}
  .headlineTop{font-size:clamp(31px,8.1vw,39px);letter-spacing:-.065em}
  .headlineBottom{font-size:clamp(34px,8.5vw,44px)}
- .description{font-size:12px;max-width:350px}
- .buttons{gap:7px}.primaryButton,.secondaryButton{font-size:11px}
- .skillPills span{padding:5px 8px;font-size:8px}
- .portraitZone{min-height:270px;margin-top:9px}.portrait{max-height:440px}
- .portraitLabel{bottom:4%}
+ .description{font-size:12px;max-width:350px;line-height:1.58}
+ .buttons{gap:7px;margin-top:16px}.primaryButton,.secondaryButton{font-size:11px}
+ .skillPills{margin-top:14px}.skillPills span{padding:5px 8px;font-size:8px}
+ .portraitZone{flex:0 0 auto;min-height:0;max-height:none;height:clamp(225px,36svh,330px);margin-top:0;width:min(92%,410px)}
+ .portrait{height:100%;max-height:100%;max-width:100%}
+ .portraitRing{top:1%;width:65%;left:17%}
+ .portraitLabel{bottom:6%;left:-1%}
  .storyCopy{top:21%}.storyCopy h2{font-size:43px}.storyLead{font-size:12px}
  .interactionHint{font-size:8px;bottom:24px}.storyCounter{bottom:24px}
 }
