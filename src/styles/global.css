@@ -77,3 +77,6 @@ body::before{display:none!important}
 .legacy-content .section h2{font-size:clamp(36px,9vw,55px)}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Keep anchor targets visible beneath the fixed Portale-style navigation. */
+.legacy-content .section,.legacy-content #contact{scroll-margin-top:calc(95 * var(--u))}

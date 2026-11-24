@@ -129,6 +129,9 @@ export default function Page(){
       delete document.documentElement.dataset.loading;
       ScrollTrigger.refresh();
       window.setTimeout(restoreLink,80);
+      // Temporary visual QA of the pinned final screen; remove before production.
+      if(new URLSearchParams(window.location.search).get("qa")==="ready")
+        window.setTimeout(()=>window.scrollTo(0,Math.round(innerHeight*1.42)),300);
     }});
     intro.to(counterObj,{n:100,duration:.5,ease:"power1.out",onUpdate:updateCounter},0);
     if(counter)intro.to(counter,{opacity:0,duration:.15,ease:"power1.in"},.5);
