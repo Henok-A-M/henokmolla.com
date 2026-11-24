@@ -91,7 +91,7 @@ body{background:#3085d2}
 
 /* ===== HENOK IMMERSIVE V5: consistent editorial portfolio ===== */
 html,body{background:#f4f8fd}
-html{scroll-behavior:smooth;scroll-padding-top:110px}
+html{scroll-behavior:smooth;scroll-padding-top:0}
 body{font-family:"Instrument Sans",system-ui,sans-serif}
 .legacy-content{background:#f4f8fd!important;color:#1d3550;font-family:"Instrument Sans",system-ui,sans-serif;overflow:hidden}
 .legacy-content::before{background:radial-gradient(ellipse at 91% 4%,#a4dff140,transparent 32%),radial-gradient(ellipse at 3% 48%,#93cfff25,transparent 38%)}
@@ -104,7 +104,7 @@ body{font-family:"Instrument Sans",system-ui,sans-serif}
 .bridge-main p{font-size:clamp(14px,1.23vw,17px);line-height:1.85;color:#476276;max-width:420px}
 .bridge-track{display:flex;justify-content:space-between;align-items:center;gap:17px;padding:20px 0;margin-top:70px;border-top:1px solid #8aaec159;border-bottom:1px solid #8aaec159;color:#52758b;font-size:11px;letter-spacing:.12em}
 .bridge-track span:nth-child(even){color:#53b5c5;font-size:18px}
-.legacy-content .section{max-width:1420px;padding:clamp(80px,9vw,125px) 6%;border-top:1px solid #a2bfce55;scroll-margin-top:75px}
+.legacy-content .section{max-width:1420px;padding:clamp(80px,9vw,125px) 6%;border-top:1px solid #a2bfce55;scroll-margin-top:112px}
 .legacy-content .section>.kicker{font-family:"Instrument Sans",sans-serif;font-size:11px;letter-spacing:.2em;color:#347c9f!important;font-weight:600;margin-bottom:14px}
 .legacy-content .section h2,.legacy-content .section>.editorial-title{font-family:"Instrument Sans",sans-serif;font-size:clamp(41px,5.5vw,78px)!important;line-height:1.09;font-weight:400;letter-spacing:-.058em!important;color:#142f48}
 .legacy-content .section>p{font-size:15px;line-height:1.8;color:#526b7d}
@@ -158,3 +158,6 @@ body{font-family:"Instrument Sans",system-ui,sans-serif}
  .legacy-content .section h2,.legacy-content .section>.editorial-title{font-size:39px!important}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}.legacy-content .skillcard:hover,.legacy-content .folder:hover,.legacy-content .social-link:hover{transform:none}}
+
+.legacy-content #contact{scroll-margin-top:116px}
+#layers{scroll-margin-top:0}

@@ -49,7 +49,7 @@
 .storyEyebrow{color:#e9faff;font-size:11px}
 .storyCopy h2{font-family:"Instrument Sans",sans-serif;font-weight:400;font-size:clamp(46px,6.1vw,100px);line-height:.99;letter-spacing:-.059em;margin:20px 0}
 .storyCopy h2 em{font-family:"Instrument Serif",serif;font-weight:400;font-style:italic;letter-spacing:-.05em}
-.storyLead{font-size:clamp(13px,1.2vw,17px);line-height:1.75;max-width:420px}
+.storyLead{font-size:clamp(13px,1.2vw,17px);line-height:1.75;max-width:445px;width:fit-content;padding:13px 16px;background:rgba(9,40,69,.29);border:1px solid rgba(231,249,255,.21);border-radius:14px;backdrop-filter:blur(8px);box-shadow:0 12px 30px #0f487720}
 .secondStory{left:auto;right:5%;text-align:right;top:25%}
 .secondStory .storyLead{margin-left:auto}
 .interactionHint{position:absolute;z-index:4;bottom:40px;left:5%;font-size:10px;letter-spacing:.16em;color:#e3f7ff;text-shadow:0 1px 9px #0e4879}
@@ -76,7 +76,7 @@
  .portraitLabel strong{font-size:11px}.portraitLabel small{font-size:9px}
  .scrollHint{bottom:15px;left:25px;font-size:9px}
  .chapter{top:100px;left:6%;font-size:9px}
- .storyCopy{top:19%;left:6%;max-width:83%}.storyCopy h2{font-size:clamp(45px,10.2vw,78px)}.storyLead{font-size:13px;max-width:350px}
+ .storyCopy{top:19%;left:6%;max-width:83%}.storyCopy h2{font-size:clamp(45px,10.2vw,78px)}.storyLead{font-size:13px;max-width:350px;padding:10px 12px}
  .secondStory{left:auto;right:6%;top:21%}
  .interactionHint{font-size:9px;left:6%;max-width:78%;line-height:1.5}
  .storyCounter{right:6%}
