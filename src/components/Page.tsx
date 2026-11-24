@@ -69,6 +69,7 @@ export default function Page(){
   const stageCopy=hero;
   const prev=document.documentElement.dataset.loading;
   const restoreLink=()=>{const hash=window.location.hash;if(hash&&hash!=="#home"){const el=document.getElementById(decodeURIComponent(hash.slice(1)));el?.scrollIntoView({behavior:"auto",block:"start"});}};
+  let removeTiltListener=()=>{};
   const ctx=gsap.context(()=>{
     ScrollTrigger.config({ignoreMobileResize:true});
     const state=portal.current;
@@ -91,8 +92,7 @@ export default function Page(){
       const toX=gsap.quickTo(readyImage,"rotationX",{duration:.8,ease:"power2.out"});
       const pointer=(e:PointerEvent)=>{toY((e.clientX/innerWidth-.5)*16);toX(-(e.clientY/innerHeight-.5)*12);};
       window.addEventListener("pointermove",pointer,{passive:true});
-      // GSAP context collects the unsubscribe function.
-      ctx.add("cleanupPointer",()=>window.removeEventListener("pointermove",pointer));
+      removeTiltListener=()=>window.removeEventListener("pointermove",pointer);
     }
     let lastShow=false;
     const scrub={p:0};
@@ -147,7 +147,7 @@ export default function Page(){
   },wrap);
   const suppress=(e:MouseEvent)=>{const target=e.target instanceof Element?e.target.closest('a[href="#"]'):null;if(target)e.preventDefault();};
   document.addEventListener("click",suppress);
-  return ()=>{alive=false;document.removeEventListener("click",suppress);ctx.revert();history.scrollRestoration=oldRestore;if(prev===undefined)delete document.documentElement.dataset.loading;else document.documentElement.dataset.loading=prev;};
+  return ()=>{alive=false;document.removeEventListener("click",suppress);removeTiltListener();ctx.revert();history.scrollRestoration=oldRestore;if(prev===undefined)delete document.documentElement.dataset.loading;else document.documentElement.dataset.loading=prev;};
  },[loaded]);
  return <>
   <Nav theme={theme}/>
