@@ -1,10 +1,13 @@
 
-import type { CSSProperties, Ref } from "react";
+import { forwardRef } from "react";
 import styles from "./Preloader.module.css";
-type Props={phase:"loading"|"burning"|"ready"|"done";hostRef:Ref<HTMLDivElement>;numberRef:Ref<HTMLSpanElement>;barRef:Ref<HTMLDivElement>};
-export default function Preloader({phase,hostRef,numberRef,barRef}:Props){
-  return <div className={styles.root} data-phase={phase} aria-busy={phase==="loading"}><div className={styles.burnHost} ref={hostRef}/><div className={styles.ui}>
-    <p className={styles.counter+" serif trim"} style={{"--lh":"calc(.8 * var(--counter-size))"} as CSSProperties} role="status" aria-label="Loading"><span ref={numberRef}>0</span>%</p>
-    <div className={styles.track}><div className={styles.progress} ref={barRef}/></div>
-  </div></div>;
-}
+const Preloader=forwardRef<HTMLDivElement,{}>(function Preloader(_props,ref){
+ return <div ref={ref} className={styles.loader} data-preloader="true">
+  <div className={styles.wordmark} data-preloader-wordmark="true" aria-hidden="true">
+   <img src="https://assets.uberdesigner.ai/portale/wordmark.svg" alt=""/>
+   <span>HENOK MOLLA</span>
+  </div>
+  <p className={styles.counter} aria-label="Loading portfolio"><span data-counter="true">00</span>%</p>
+ </div>;
+});
+export default Preloader;

@@ -1,13 +1,8 @@
 
-.root{position:absolute;inset:0;z-index:8;pointer-events:auto;background:#609aca}
-.burnHost{position:absolute;inset:0;background:#609aca}
-.burnHost canvas{width:100%;height:100%;display:block}
-.ui{position:absolute;inset:0;z-index:2}
-.counter{position:absolute;bottom:calc(36.8 * var(--u));left:calc(28 * var(--u));color:white;font-family:"Instrument Serif",Georgia,serif;font-size:var(--counter-size);font-style:italic;letter-spacing:-.035em;white-space:nowrap;text-shadow:0 calc(2 * var(--u)) calc(24 * var(--u)) rgba(20,59,78,.45)}
-.track{position:absolute;bottom:0;left:0;right:0;height:calc(4 * var(--u));background:var(--track)}
-.progress{height:100%;background:#fff;width:100%;transform:scaleX(0);transform-origin:left}
-.root[data-phase="burning"] .ui,.root[data-phase="ready"] .ui,.root[data-phase="done"] .ui{animation:uiLeave .35s ease forwards}
-.root[data-phase="done"]{opacity:0;visibility:hidden;pointer-events:none}
-@keyframes uiLeave{to{opacity:0;transform:translateY(calc(10 * var(--u)))}}
-@media(max-width:1023px){.counter{left:calc(18 * var(--u));bottom:calc(28.4 * var(--u))}}
-@media(prefers-reduced-motion:reduce){.root[data-phase="ready"]{opacity:0;pointer-events:none;transition:opacity .2s linear}.root[data-phase="done"]{opacity:0}.ui{animation-duration:.01ms!important}}
+.loader{position:absolute;inset:0;z-index:0;background:white;display:grid;place-items:center;pointer-events:none}
+.wordmark{position:absolute;left:50%;top:50%;width:calc(1351 * var(--u));transform:translate(-50%,-50%);opacity:.15}
+.wordmark img{display:block;width:100%;opacity:.28}
+.wordmark span{position:absolute;inset:0;display:grid;place-items:center;white-space:nowrap;color:#99b6d2;font-weight:400;font-size:calc(123 * var(--u));letter-spacing:-.065em}
+.counter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:var(--counter-size);font-weight:400;line-height:1;color:#151515;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:1023px){.wordmark{width:calc(100vw - 40 * var(--u))}.wordmark span{font-size:calc(42 * var(--u))}}
+@media(prefers-reduced-motion:reduce){.counter,.wordmark{display:none}}
