@@ -22,3 +22,53 @@ html,body{min-height:100%;max-width:100%}
 .legacy-content footer{background:#02060b}
 @media(max-width:700px){.profile-recap{grid-template-columns:1fr;gap:22px;padding:65px 6% 25px}.profile-recap .recap-photo{width:200px;max-height:240px}.profile-recap h2{font-size:clamp(30px,9vw,48px)}}
 @media(pointer:fine) and (prefers-reduced-motion:no-preference){html[data-cursor-active="true"],html[data-cursor-active="true"] body,html[data-cursor-active="true"] a,html[data-cursor-active="true"] button{cursor:none}}
+
+
+/* Continuing the frosted ice-cave art direction throughout the real portfolio. */
+.legacy-content{background:
+radial-gradient(ellipse at 78% 11%,rgba(47,134,212,.17),transparent 36%),
+radial-gradient(ellipse at 12% 38%,rgba(49,112,175,.11),transparent 35%),
+linear-gradient(180deg,#02060b,#071525 32%,#081a30 71%,#02060b)}
+.legacy-content .section{max-width:1200px;padding:94px 7%;border-color:rgba(178,220,255,.14)}
+.legacy-content .section>.kicker{font-size:11px;letter-spacing:.21em;color:#9fd9ff}
+.legacy-content .section>.editorial-title{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-stretch:normal;font-size:clamp(38px,5.2vw,68px)!important;line-height:1.04;letter-spacing:-.025em!important;max-width:850px;font-weight:400}
+.legacy-content .section>h2:not(.editorial-title){font-size:clamp(34px,5vw,58px);line-height:1.08;font-weight:400;letter-spacing:-.035em}
+.legacy-content .section>p{max-width:800px;font-size:16px;color:#c5d6e8}
+.legacy-content .aboutgrid{gap:22px}
+.legacy-content .featurebox,.legacy-content .skillcard{
+  background:linear-gradient(128deg,rgba(210,231,255,.095),rgba(65,130,185,.075) 48%,rgba(19,57,89,.17));
+  border:1px solid rgba(197,228,255,.23);border-radius:24px;
+  box-shadow:inset 0 1px 0 #ffffff19,0 18px 50px #0003;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.legacy-content .featurebox{padding:clamp(21px,3vw,36px)}
+.legacy-content .skillcard{min-height:180px;padding:25px}
+.legacy-content .skillcard .symbol{width:48px;height:48px;margin-bottom:22px;background:rgba(126,196,255,.13);border:1px solid rgba(155,215,255,.22);padding:9px;border-radius:14px;color:#94dfff}
+.legacy-content .skillcard .symbol svg{width:29px;height:29px}
+.legacy-content .skillcard h3{font-size:19px;letter-spacing:-.015em}
+.legacy-content .skillcard p{font-size:13px;line-height:1.7}
+.legacy-content .skillcard:hover,.legacy-content .featurebox:hover{border-color:rgba(158,224,255,.59);box-shadow:0 22px 55px #0210227a,inset 0 1px 0 #ffffff25}
+.legacy-content .aboutitem strong{font-weight:600}
+.legacy-content .abouticon{border:1px solid rgba(161,220,255,.31);background:#8ad4ff12;border-radius:13px}
+.legacy-content .folder{border:1px solid rgba(170,215,255,.25);background:linear-gradient(140deg,#18364b99,#0e243ab5);border-radius:17px;box-shadow:inset 0 1px 0 #ffffff10}
+.legacy-content .folder:hover,.legacy-content .folder.active{background:linear-gradient(140deg,#28537299,#11344eac);border-color:#94d6ffb1}
+.legacy-content .folder .project-icon{background:#7bcbff18;border-color:#84cafa55}
+.legacy-content .filewindow{border-radius:22px;border:1px solid rgba(169,215,255,.28);background:rgba(8,23,40,.88);box-shadow:0 25px 80px #0005}
+.legacy-content .bar{background:rgba(178,215,255,.055);border-bottom-color:#86bfff25}
+.legacy-content .filebody{color:#c9dced}
+.legacy-content .filetag{border-color:#8bd3ff59;color:#b5eaff;background:#6595ff0e;border-radius:99px}
+.legacy-content .social-link{background:linear-gradient(125deg,#244c6d99,#102a43a8);border:1px solid #9fdfff6a;border-radius:99px}
+.legacy-content .contact-social .social-link:hover{background:linear-gradient(125deg,#315f7daa,#173a59e3)}
+.legacy-content .btn.alt{border-radius:99px;background:#192f48;border-color:#7bbbe966}
+.legacy-content .journey-logo-box{background:#fff;border:1px solid #d8e7f5;border-radius:16px}
+.legacy-content .org-link{color:#bee8ff;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#b7e5ff89}
+.legacy-content .org-link:hover{color:#fff;text-decoration-color:#fff}
+.legacy-content footer{color:#9fbad2;border-color:#aecfff28;padding:38px 16px}
+@media(max-width:700px){
+  .legacy-content .section{padding:72px 6%}
+  .legacy-content .section>.editorial-title{font-size:clamp(38px,9vw,54px)!important}
+  .legacy-content .skillcard{min-height:170px;padding:19px}
+  .legacy-content .featurebox{padding:21px}
+  .legacy-content .journey-brand-row{gap:12px}
+}
+@media(prefers-reduced-motion:reduce){.legacy-content .skillcard:hover,.legacy-content .featurebox:hover,.legacy-content .folder:hover{transform:none}}

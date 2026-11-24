@@ -21,6 +21,16 @@ export default function App(){
   const numberRef=useRef<HTMLSpanElement>(null),barRef=useRef<HTMLDivElement>(null),cursorRef=useRef<HTMLDivElement>(null);
   const [phase,setPhase]=useState<Phase>("loading");
   const intro=phase==="ready"||phase==="done";
+  // Fragments requested in bookmarks or shared links must be restored after React adds the sections.
+  useEffect(()=>{
+    const jump=()=>{if(!window.location.hash)return;
+      const id=decodeURIComponent(window.location.hash.slice(1));
+      const target=document.getElementById(id);if(target)target.scrollIntoView({behavior:"auto",block:"start"});
+    };
+    const t1=window.setTimeout(jump,50),t2=window.setTimeout(jump,500);
+    window.addEventListener("load",jump,{once:true});
+    return ()=>{window.clearTimeout(t1);window.clearTimeout(t2);window.removeEventListener("load",jump);};
+  },[]);
   useEffect(()=>{
     const story=storyRef.current,stage=stageRef.current,ch=caveHost.current,bh=burnHost.current;
     if(!story||!stage||!ch||!bh)return;
