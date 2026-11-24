@@ -21,4 +21,4 @@ html,body{min-height:100%;max-width:100%}
 .profile-recap .recap-tags span{border:1px solid #507a9b;background:#0e2942;color:#c9ebff;border-radius:99px;padding:7px 11px;font-size:11px}
 .legacy-content footer{background:#02060b}
 @media(max-width:700px){.profile-recap{grid-template-columns:1fr;gap:22px;padding:65px 6% 25px}.profile-recap .recap-photo{width:200px;max-height:240px}.profile-recap h2{font-size:clamp(30px,9vw,48px)}}
-@media(pointer:fine) and (prefers-reduced-motion:no-preference){html:has(.alpha-cursor-active),html:has(.alpha-cursor-active) body,html:has(.alpha-cursor-active) a,html:has(.alpha-cursor-active) button{cursor:none}}
+@media(pointer:fine) and (prefers-reduced-motion:no-preference){html[data-cursor-active="true"],html[data-cursor-active="true"] body,html[data-cursor-active="true"] a,html[data-cursor-active="true"] button{cursor:none}}

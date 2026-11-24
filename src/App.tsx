@@ -40,7 +40,7 @@ export default function App(){
     const pointerTarget={x:0,y:0},pointer={x:0,y:0};
     const mouse={x:window.innerWidth/2,y:window.innerHeight/2},cursorPos={x:mouse.x,y:mouse.y};
     let seenMouse=false,mouseActive=true;
-    const changePhase=(next:Phase)=>{phaseLocal=next;if(alive)setPhase(next);};
+    const changePhase=(next:Phase)=>{phaseLocal=next;if(alive)setPhase(next);document.documentElement.dataset.cursorActive=String((next==="ready"||next==="done")&&!reduced);};
     const updateMeasurements=()=>{unit=(probe.current?.getBoundingClientRect().width||100)/100;scrollTarget=clamp(-story.getBoundingClientRect().top/Math.max(1,story.offsetHeight-window.innerHeight));};
     const move=(e:PointerEvent)=>{
       if(e.pointerType==="touch")return;
@@ -125,7 +125,7 @@ export default function App(){
     };
     raf=requestAnimationFrame(frame);
     return ()=>{
-      alive=false;cancelAnimationFrame(raf);seq.destroy();
+      alive=false;cancelAnimationFrame(raf);seq.destroy();delete document.documentElement.dataset.cursorActive;
       window.removeEventListener("scroll",updateMeasurements);
       window.removeEventListener("resize",updateMeasurements);
       window.removeEventListener("pointermove",move);
