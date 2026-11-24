@@ -1,20 +1,17 @@
-# Henok Molla — Easylog-Inspired Portfolio
+# Henok Molla — Immersive Network Security Portfolio
 
-A fully responsive personal portfolio with an interactive hero based on the provided **Easylog** design prompt, using **Vite, React 19, strict TypeScript, GSAP 3.15, and Canvas 2D**.
+A personal, editorial portfolio built with **React 19**, **TypeScript**, **Vite**, **GSAP 3.15**, and the original interactive Canvas 2D moss effect.
 
-## The hero
+## Experience
 
-- A full-screen sky-blue gradient and the original paired 2752 × 1536 transparent log artworks.
-- A pixelated 64 → 1 CSS-pixel intro that sharpens while the log settles from 2.6× zoom.
-- A real image-byte-based percentage counter, waiting for the two decoded images and the Instrument Sans/Instrument Serif font faces.
-- A GSAP introduction for the glass navigation, character-by-character headline, lead, bottom bar and CTA.
-- On mouse devices, the bare log grows moss where the pointer moves. Motion stamps are spaced independently of frame rate; resting stamps keep moss under the pointer. Each stamp fades exponentially to avoid permanent trails.
-- On touch devices, the full mossy artwork shows. Reduced-motion preferences skip the counter, pixelation and zoom.
-- A custom trailing glass cursor on supported pointer devices.
+- **Portrait-led home:** large, unfiltered original portrait with a dark navy background and clean spacing. It displays without white overlays, translucent photo masks, or light-tinted image containers.
+- **Personalized story:** truthful, grounded descriptions of Henok's Year Up United Network Security track, City University of Seattle studies, and goal to become a network engineer or cybersecurity engineer.
+- **Motion and navigation:** percentage preloader, word-by-word headline reveals, responsive glass navigation, social and email shortcuts, progress bar, pointer-responsive portrait parallax, and smooth in-page navigation.
+- **Interactive scroll chapter:** a tall, pinned story stage reuses the pixel-perfect bare/mossy log artworks. Desktop users can paint temporary moss by moving the pointer; the brush fades exponentially rather than leaving permanent trails. A scroll-driven second narrative appears, ending in a circular white transition to the rest of the portfolio.
+- **Real hands-on work:** the original About, 8 skill cards, 13 project folders, VLAN visual exploration, Wireshark evidence, education and professional experience, and contact links remain.
+- **Unified sections:** a continuous editorial treatment extends through the whole page with frosted cards, soft blue backgrounds, scroll reveals, and readable mobile layouts.
 
-The new hero preserves the supplied Easylog copy and assets. The sections **below** the hero remain Henok's actual About, Skills, Projects, My Journey and Contact content, including the professional portrait, eight skill cards, 13 project folders, screenshots and interactive labs. Navigation points to those working sections.
-
-## Development
+## Develop
 
 ```bash
 npm install
@@ -22,12 +19,23 @@ npm run dev
 npm run build
 ```
 
-Cloudflare Pages: build command `npm run build`, output directory `dist`. The build also copies `assets/` and security `_headers` into the published folder.
+Cloudflare Pages: build command `npm run build`; output folder `dist`. The build copies original project screenshots and the deployment security policy in `_headers`.
 
-## Image quality
+## Original image assets
 
-The provided log images are **2752 × 1536**, rendered at up to 2× the device pixel ratio. The code does not invent extra image detail or claim native 8K source resolution.
+- Personal photo: `Henok-A-M/Henok-A-M/assets/henok_clear_highres_85.webp`.
+- Interactive log (reused as an art element, not as a brand): `https://assets.uberdesigner.ai/easylog/log-bare.webp` and `log-moss.webp`.
 
-## Privacy and organization links
+The page does **not** claim to include native 8K imagery. Asset resolution is unchanged; artwork is rendered at device-appropriate scaling.
 
-The Year Up United school email is not published. As requested, the organization names link out only in the My Journey section; their logos are visible but not links.
+## Accessibility and privacy
+
+- Honor `prefers-reduced-motion` and touchscreens.
+- All major navigation controls work without the custom cursor.
+- No additional analytics or trackers added.
+- Organization website links appear only on the organization names in **My Journey**. Their logos are intentionally not clickable.
+- The private Year Up email is not published. The visible contact links are GitHub, LinkedIn, and personal email.
+
+## Built with an engineer's mindset
+
+This site is intended to grow as new networking and cybersecurity labs are completed. Planned projects remain labeled **Planned**, and the current VLAN evidence is not represented as completed isolation validation.
