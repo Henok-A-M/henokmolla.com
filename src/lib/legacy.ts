@@ -1,5 +1,6 @@
 
 import projects from "../legacy/projects.json";
+import "../styles/explorers.css";
 export function initLegacy(root:HTMLElement):()=>void{
   const ctrl=new AbortController(),signal=ctrl.signal;
   const all=<T extends Element>(selector:string)=>Array.from(root.querySelectorAll<T>(selector));
@@ -103,5 +104,126 @@ export function initLegacy(root:HTMLElement):()=>void{
     root.classList.add("motion-ready");
     revealTargets.forEach(el=>observer?.observe(el));
   }
-  return ()=>{ctrl.abort();observer?.disconnect();root.classList.remove("motion-ready");};
+
+  // Keep the exploration controls alongside the original portfolio content.
+  const additions: HTMLElement[] = [];
+  function explorer(section: string, title: string) {
+    const heading = root.querySelector("#" + section + " > h2");
+    if (!heading) return null;
+    const box = document.createElement("div");
+    box.className = "section-explorer";
+    const label = document.createElement("h3");
+    label.textContent = title;
+    const actions = document.createElement("div");
+    actions.className = "explorer-actions";
+    const output = document.createElement("p");
+    output.setAttribute("aria-live", "polite");
+    box.append(label, actions, output);
+    heading.after(box);
+    additions.push(box);
+    return { box, actions, output };
+  }
+  function action(host: HTMLElement, text: string, run: () => void) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = text;
+    button.addEventListener("click", run, { signal });
+    host.append(button);
+    return button;
+  }
+  type Chapter = [string, string, string?, number?];
+  function chapters(section: string, title: string, entries: Chapter[]) {
+    const ui = explorer(section, title);
+    if (!ui) return;
+    const links = document.createElement("div");
+    links.className = "explorer-actions";
+    ui.box.append(links);
+    const show = (index: number) => {
+      const [, story, destination, project] = entries[index];
+      buttons.forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
+      ui.output.textContent = story;
+      links.replaceChildren();
+      if (destination) action(links, destination === "projects" ? "Explore the lab" : "Explore " + destination, () => {
+        location.hash = destination;
+        if (project !== undefined) root.querySelector<HTMLButtonElement>('[data-project="' + project + '"]')?.click();
+      });
+    };
+    const buttons = entries.map(([name], i) => action(ui.actions, name, () => show(i)));
+    show(0);
+  }
+  chapters("about", "Explore my story", [
+    ["How I started", "Helping family troubleshoot phones and computers taught me to listen to the problem, test one change, and explain what worked."],
+    ["What I practice", "In Packet Tracer, I work with switches and VLANs. In Wireshark, I follow packets to see what devices actually exchanged.", "projects", 1],
+    ["Where I’m headed", "My goal is to become a network engineer or cybersecurity engineer. I’m building that foundation through coursework and hands-on labs.", "skills"],
+  ]);
+  chapters("skills", "See a skill in practice", [
+    ["Segmentation", "Explore the two-switch topology and select a VLAN to highlight the example devices. The screenshots show which configuration steps I verified.", "projects", 0],
+    ["Packet analysis", "Follow a TCP conversation in the Wireshark lab and open the capture screenshots for a closer look.", "projects", 1],
+    ["Infrastructure", "My home lab gives me a place to practice network configuration and troubleshooting. Documentation is in progress.", "projects", 2],
+  ]);
+  chapters("experience", "Explore my journey", [
+    ["Security operations", "In security operations I practice observing carefully, communicating clearly, and following procedures."],
+    ["City University", "At City University of Seattle, my coursework connects communication and critical thinking with my technical studies.", "skills"],
+    ["Year Up United", "On the Network Security track, I put networking concepts into practice through labs such as VLAN configuration.", "projects", 0],
+  ]);
+  const library = explorer("projects", "Find a project");
+  if (library) {
+    const search = document.createElement("input");
+    search.type = "search";
+    search.placeholder = "Search by project or tool";
+    search.setAttribute("aria-label", search.placeholder);
+    library.actions.before(search);
+    const folders = all<HTMLButtonElement>("[data-project]");
+    let group = "All";
+    const filter = () => {
+      const query = search.value.trim().toLowerCase();
+      let count = 0;
+      let first: HTMLButtonElement | undefined;
+      let selected = false;
+      for (const button of folders) {
+        const project = projects[Number(button.dataset.project)];
+        if (!project) continue;
+        const planned = project.tags.includes("Planned");
+        const visible = (group === "All" || planned === (group === "Planned")) &&
+          [project.title, project.folder, ...project.tags].join(" ").toLowerCase().includes(query);
+        button.hidden = !visible;
+        if (visible) {
+          count++;
+          first ??= button;
+          selected ||= button.classList.contains("active");
+        }
+      }
+      if (!count) panels.forEach(panel => panel.hidden = true);
+      else if (!selected || panels.every(panel => panel.hidden)) first?.click();
+      library.output.textContent = count ? count + (count === 1 ? " project" : " projects") : "No matching projects. Try another term or choose All.";
+      filters.forEach(button => button.setAttribute("aria-pressed", String(button.textContent === group)));
+    };
+    const filters = ["All", "Hands-on", "Planned"].map(name => action(library.actions, name, () => { group = name; filter(); }));
+    search.addEventListener("input", filter, { signal });
+    folders.forEach(button => button.addEventListener("click", () => {
+      if (button.hidden) { search.value = ""; group = "All"; filter(); }
+    }, { signal }));
+    filter();
+  }
+  const contact = explorer("contact", "Get in touch");
+  const mail = root.querySelector<HTMLAnchorElement>("#contact a[href^='mailto:']");
+  if (contact && mail) {
+    const address = mail.href.slice(7);
+    contact.output.textContent = address;
+    action(contact.actions, "Copy email address", async () => {
+      try {
+        await navigator.clipboard.writeText(address);
+        contact.output.textContent = "Copied " + address;
+      } catch {
+        contact.output.textContent = "Select and copy: " + address;
+        const range = document.createRange();
+        range.selectNodeContents(contact.output);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    });
+  }
+
+  return ()=>{additions.forEach(el => el.remove());ctrl.abort();observer?.disconnect();root.classList.remove("motion-ready");};
 }
