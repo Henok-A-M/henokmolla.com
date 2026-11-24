@@ -5,8 +5,8 @@ import { CARD } from "../lib/loadImages";
 export default function Ready({photo}:{photo:string|null}){
  return <section className={styles.ready} data-ready-screen="true" aria-label="Network security portfolio highlights">
   <div className={styles.wordmark} data-ready="wordmark"><img src="https://assets.uberdesigner.ai/portale/wordmark.svg" alt="" aria-hidden="true"/><span>HENOK MOLLA</span></div>
-  <h2 className={styles.heading} aria-label="Everything Connected Built for What's Next">
-   <span className={styles.headingTop} data-ready="text"><Words text="Everything Connected" className={styles.word}/></span>
+  <h2 className={styles.heading} aria-label="Everything Ready Built for What's Next">
+   <span className={styles.headingTop} data-ready="text"><Words text="Everything Ready" className={styles.word}/></span>
    <span className={styles.headingBottom} data-ready="text"><Words text="Built for What's Next" className={styles.word}/></span>
   </h2>
   <div className={styles.cardBox} data-ready="card">
