@@ -48,6 +48,34 @@ export default function Network(){
      window.removeEventListener("resize", update);
    };
  }, []);
+ useEffect(() => {
+   const globe = stage.current;
+   if (!globe) return;
+   function handleWheel(event: WheelEvent) {
+     if (!event.cancelable || event.deltaY === 0 ||
+         Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
+     const delta = event.deltaY * unit;
+     const zoom = motion.current.targetZoom;
+     if (event.ctrlKey) {
+       // Trackpads deliver a pinch as a modified wheel event.
+       event.preventDefault();
+       zoomAt(Math.max(-.35, Math.min(.35, -delta * .012)), event.clientX, event.clientY);
+       return;
+     }
+     if (window.scrollY > 1) return;
+     if (delta < 0 && zoom > .5) {
+       event.preventDefault();
+       zoomAt(Math.max(-.35, delta * .0025));
+     } else if (delta > 0 && zoom > 1) {
+       // Unwind magnification before handing downward scrolling back to the page.
+       event.preventDefault();
+       zoomAt(-Math.min(zoom - 1, .35, delta * .0025));
+     }
+   }
+   globe.addEventListener("wheel", handleWheel, { passive: false });
+   return () => globe.removeEventListener("wheel", handleWheel);
+ }, []);
  useEffect(()=>{const c=canvas.current,host=stage.current;if(!c||!host)return;const ctx=c.getContext("2d");if(!ctx)return;let raf=0,w=0,h=0,dpr=1;const m=motion.current;const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const resize=()=>{w=host.clientWidth;h=host.clientHeight;dpr=Math.min(devicePixelRatio,2);c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)};const ro=new ResizeObserver(resize);ro.observe(host);resize();  const render=(t:number)=>{if(host.getBoundingClientRect().bottom<0){raf=requestAnimationFrame(render);return;}if(!m.drag){if(m.focus){m.yaw+=(m.targetYaw-m.yaw)*(reduced?1:.075);m.pitch+=(m.targetPitch-m.pitch)*(reduced?1:.075);}else if(!m.paused&&!reduced)m.yaw+=.001;}m.zoom+=(m.targetZoom-m.zoom)*(reduced?1:.075);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,r=Math.min(w*.29,h*.34)*m.zoom;
    const project=(v:V)=>{const [x,y,z]=v;const a=x*Math.cos(m.yaw)+z*Math.sin(m.yaw),b=z*Math.cos(m.yaw)-x*Math.sin(m.yaw),p=y*Math.cos(m.pitch)-b*Math.sin(m.pitch),q=b*Math.cos(m.pitch)+y*Math.sin(m.pitch);const s=3.8/(3.8-q);return {x:cx+a*r*s,y:cy-p*r*s,z:q,s};};
