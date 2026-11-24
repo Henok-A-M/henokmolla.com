@@ -14,9 +14,11 @@ import GradientBackdrop from './GradientBackdrop';
 export default function Network(){
  const [active,setActive]=useState(initial),[paused,setPaused]=useState(false),[focused,setFocused]=useState("");const canvas=useRef<HTMLCanvasElement>(null),stage=useRef<HTMLDivElement>(null),labels=useRef<(HTMLButtonElement|null)[]>([]),content=useRef<HTMLDivElement>(null),readout=useRef<HTMLSpanElement>(null),meter=useRef<HTMLDivElement>(null);
  const motion=useRef({yaw:-.6,pitch:.12,zoom:1,targetZoom:1,drag:false,startX:0,startY:0,moved:false,lastX:0,lastY:0,paused:false,targetYaw:-.6,targetPitch:.12,focus:"",points:[] as {id:string;x:number;y:number;z:number}[],touches:new Map<number,{x:number;y:number}>(),pinch:0});
+ const pendingSection = useRef("");
  const select = (id: string) => {
    const target = document.getElementById(id || "overview");
    if (!target) return;
+   pendingSection.current = "";
    motion.current.focus = "";
    motion.current.targetZoom = 1;
    setFocused("");
@@ -51,30 +53,74 @@ export default function Network(){
  useEffect(() => {
    const globe = stage.current;
    if (!globe) return;
+   let lastWheel = -Infinity;
+   function advance(target: EventTarget | null) {
+     const id = motion.current.focus ||
+       (target instanceof Element && target.closest<HTMLElement>("[data-node]")?.dataset.node) || "about";
+     if (pendingSection.current === id) {
+       select(id);
+     } else {
+       pendingSection.current = id;
+       aim(id);
+       motion.current.targetZoom = 1.5;
+     }
+   }
    function handleWheel(event: WheelEvent) {
-     if (!event.cancelable || event.deltaY === 0 ||
-         Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+     if (!event.cancelable || !event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
      const delta = event.deltaY * unit;
-     const zoom = motion.current.targetZoom;
      if (event.ctrlKey) {
-       // Trackpads deliver a pinch as a modified wheel event.
        event.preventDefault();
+       pendingSection.current = "";
        zoomAt(Math.max(-.35, Math.min(.35, -delta * .012)), event.clientX, event.clientY);
        return;
      }
-     if (window.scrollY > 1) return;
-     if (delta < 0 && zoom > .5) {
-       event.preventDefault();
-       zoomAt(Math.max(-.35, delta * .0025));
-     } else if (delta > 0 && zoom > 1) {
-       // Unwind magnification before handing downward scrolling back to the page.
-       event.preventDefault();
-       zoomAt(-Math.min(zoom - 1, .35, delta * .0025));
+     if (delta < 0) {
+       pendingSection.current = "";
+       lastWheel = -Infinity;
+       if (window.scrollY <= 1 && motion.current.targetZoom > .5) {
+         event.preventDefault();
+         zoomAt(Math.max(-.35, delta * .0025));
+       }
+       return;
      }
+     event.preventDefault();
+     const now = performance.now();
+     // A trackpad swipe emits a stream, including decaying momentum events.
+     const newGesture = now - lastWheel > 150 || event.deltaMode === 1;
+     lastWheel = now;
+     if (newGesture) advance(event.target);
    }
-   globe.addEventListener("wheel", handleWheel, { passive: false });
-   return () => globe.removeEventListener("wheel", handleWheel);
+   let touch: { x:number; y:number; target:EventTarget | null } | null = null;
+   let vertical = false;
+   function startSwipe(event: TouchEvent) {
+     vertical = false;
+     const finger = event.touches[0];
+     touch = event.touches.length === 1 ? {x:finger.clientX,y:finger.clientY,target:event.target} : null;
+   }
+   function moveSwipe(event: TouchEvent) {
+     if (!touch || event.touches.length !== 1) return;
+     const dy = touch.y - event.touches[0].clientY;
+     if (dy > 4 && dy > Math.abs(event.touches[0].clientX - touch.x)) vertical = true;
+     if (vertical && event.cancelable) event.preventDefault();
+   }
+   function endSwipe(event: TouchEvent) {
+     if (vertical && touch && touch.y - event.changedTouches[0].clientY >= 32) advance(touch.target);
+     cancelSwipe();
+   }
+   function cancelSwipe() { touch = null; vertical = false; }
+   globe.addEventListener("wheel", handleWheel, { passive:false });
+   globe.addEventListener("touchstart", startSwipe, { passive:true });
+   globe.addEventListener("touchmove", moveSwipe, { passive:false });
+   globe.addEventListener("touchend", endSwipe);
+   globe.addEventListener("touchcancel", cancelSwipe);
+   return () => {
+     globe.removeEventListener("wheel", handleWheel);
+     globe.removeEventListener("touchstart", startSwipe);
+     globe.removeEventListener("touchmove", moveSwipe);
+     globe.removeEventListener("touchend", endSwipe);
+     globe.removeEventListener("touchcancel", cancelSwipe);
+   };
  }, []);
  useEffect(()=>{const c=canvas.current,host=stage.current;if(!c||!host)return;const ctx=c.getContext("2d");if(!ctx)return;let raf=0,w=0,h=0,dpr=1;const m=motion.current;const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const resize=()=>{w=host.clientWidth;h=host.clientHeight;dpr=Math.min(devicePixelRatio,2);c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)};const ro=new ResizeObserver(resize);ro.observe(host);resize();  const render=(t:number)=>{if(host.getBoundingClientRect().bottom<0){raf=requestAnimationFrame(render);return;}if(!m.drag){if(m.focus){m.yaw+=(m.targetYaw-m.yaw)*(reduced?1:.075);m.pitch+=(m.targetPitch-m.pitch)*(reduced?1:.075);}else if(!m.paused&&!reduced)m.yaw+=.001;}m.zoom+=(m.targetZoom-m.zoom)*(reduced?1:.075);ctx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,r=Math.min(w*.29,h*.34)*m.zoom;
@@ -96,7 +142,7 @@ export default function Network(){
   <div className="network-opening" style={{ display: "flex", flexDirection: "column", minHeight: "100dvh" }}>
   <header className="network-header"><button className="network-brand" onClick={reset}><span className="brand-icon">HM</span><span>HENOK MOLLA<small>NETWORK / SECURITY</small></span></button><nav aria-label="Portfolio sections"><button className={!active?"selected":""} onClick={reset}>Overview</button>{nodes.map(n=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}>{n.id==="about"?"About":n.name}</button>)}</nav><a className="header-git" href="https://github.com/Henok-A-M" target="_blank" rel="noreferrer">GitHub</a></header>
   <div className="network-layout"><section className="network-intro profile-console"><div className="eyeline"><i/> PERSONAL NETWORK · ONLINE</div><button className="profile-portrait" onClick={()=>select("about")} aria-label="Open about Henok"><img src={portrait} alt="Henok Molla"/><span className="portrait-corner corner-tl"/><span className="portrait-corner corner-br"/></button><h1>Henok Molla.</h1><p className="profile-role">Aspiring Network &amp; Cybersecurity Engineer</p><p className="profile-location">Seattle · Year Up United<br/>City University of Seattle</p><button className="profile-about" onClick={()=>select("about")}>About me <span>＋</span></button></section>
-   <div className="network-stage" ref={stage} onDragStart={e=>e.preventDefault()} onClickCapture={e=>{if(e.detail && motion.current.moved){e.preventDefault();e.stopPropagation();}}} onPointerDown={e=>{if(e.button!==0)return;const m=motion.current;m.startX=e.clientX;m.startY=e.clientY;m.moved=m.touches.size>0;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;if(Math.hypot(e.clientX-m.startX,e.clientY-m.startY)>5){m.moved=true;if(!e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.setPointerCapture(e.pointerId);}m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(m.focus){m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}}>
+   <div className="network-stage" ref={stage} onDragStart={e=>e.preventDefault()} onClickCapture={e=>{if(e.detail && motion.current.moved){e.preventDefault();e.stopPropagation();}}} onPointerDown={e=>{if(e.button!==0)return;const m=motion.current;m.startX=e.clientX;m.startY=e.clientY;m.moved=m.touches.size>0;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;if(Math.hypot(e.clientX-m.startX,e.clientY-m.startY)>5){m.moved=true;if(!e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.setPointerCapture(e.pointerId);}m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(e.pointerType==="touch" && m.startY-e.clientY>Math.abs(e.clientX-m.startX))return;if(m.focus){pendingSection.current="";m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}}>
     <canvas ref={canvas} aria-hidden="true"/><div className="scene-hud" aria-hidden="true"><span>{focused?"TARGET ACQUIRED":"NETWORK EXPLORER"}</span><span>MAGNIFICATION <b ref={readout}>100%</b></span><div className="scene-meter"><div ref={meter}/></div></div><div className="sphere-axis" aria-hidden="true"><span>HM</span><small>NETWORK CORE</small></div>{nodes.map((n,i)=><button ref={el=>{labels.current[i]=el}} className={`sphere-node ${active===n.id?"active":""} ${focused===n.id?"focused":""}`} key={n.id} data-node={n.id} onClick={()=>select(n.id)}><i/><span>{n.name}<small>{n.sub}</small></span></button>)}<div className="sphere-caption"><span>NETWORK CORE / 05 NODES</span></div>
    </div><aside className="network-side"><span className="side-kicker">SYSTEM INDEX</span>{nodes.map((n,i)=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}><span>0{i+1}</span><div>{n.name}<small>{n.sub}</small></div><b>＋</b></button>)}<div className="network-controls"><button onClick={()=>{const m=motion.current;if(!m.focus){const nearest=[...m.points].sort((a,b)=>b.z-a.z)[0];if(nearest)aim(nearest.id);}zoomAt(.4)}} aria-label="Zoom in">＋</button><button onClick={()=>zoomAt(-.4)} aria-label="Zoom out">−</button><button onClick={()=>setPaused(p=>!p)}>{paused?"Resume":"Pause"}</button><button onClick={reset}>Reset view</button></div></aside>
   </div>
