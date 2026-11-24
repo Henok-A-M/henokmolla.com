@@ -101,3 +101,30 @@ html,body{background:#050d18!important;color:#eaf6ff;scroll-behavior:auto}body{f
 @media (prefers-reduced-motion: reduce) {
   .network-panel, .network-side > button > div { transition: none; }
 }
+
+.scroll-portfolio { overflow: clip; }
+.scroll-portfolio .network-stage {
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.scroll-portfolio .network-content {
+  width: 100%;
+  background: #09141d !important;
+}
+.scroll-portfolio .network-content > section[id] {
+  display: block !important;
+  border-top: 1px solid var(--hairline);
+  scroll-margin-top: 1rem;
+}
+.read-portfolio {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 10px 18px;
+  color: #d3e7ef;
+  font-size: 14px;
+}
+.read-portfolio span { color: #91deeb; }
