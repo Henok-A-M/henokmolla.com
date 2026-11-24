@@ -102,7 +102,18 @@ export default function Network(){
   </div>
   <a className="read-portfolio" href="#about">About Henok <span aria-hidden="true">↓</span></a>
   </div>
+  {active && <button type="button" className="back-to-globe" onClick={reset}
+    style={{
+      position: "fixed", right: "max(16px, env(safe-area-inset-right))",
+      bottom: "max(16px, env(safe-area-inset-bottom))", zIndex: 60,
+      display: "inline-flex", alignItems: "center", gap: 8, minHeight: 44,
+      padding: "0 16px", borderRadius: 24, border: "1px solid #7296a5",
+      background: "#10232e", color: "#edfaff", boxShadow: "0 4px 18px #0005",
+      font: "inherit", fontSize: 14, cursor: "pointer"
+    }}>
+    <span aria-hidden="true">↑</span> Back to globe
+  </button>}
   <div className="legacy-content network-content" ref={content} dangerouslySetInnerHTML={portfolioMarkup}/>
-  <footer className="network-footer"><span>HENOK MOLLA © 2026</span><span>BUILT TO LEARN. DESIGNED TO CONNECT.</span><button onClick={()=>select("contact")}>LET'S CONNECT</button></footer>
+  <footer className="network-footer" style={{paddingBottom:"calc(76px + env(safe-area-inset-bottom))"}}><span>HENOK MOLLA © 2026</span><span>BUILT TO LEARN. DESIGNED TO CONNECT.</span><button onClick={()=>select("contact")}>LET'S CONNECT</button></footer>
  </main>
 }
