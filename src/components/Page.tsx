@@ -82,10 +82,10 @@ export default function Page(){
     if(readyFloat)reveal.fromTo(readyFloat,{rotationY:-70,rotation:18,scale:.75,filter:"blur(16px) brightness(1.6)"},{rotationY:0,rotation:0,scale:1,filter:"blur(0px) brightness(1)",duration:1.4,ease:"power3.out",clearProps:"filter"},0);
     const top=st.querySelectorAll<HTMLElement>('[data-ready="text"]')[0];
     const bottom=st.querySelectorAll<HTMLElement>('[data-ready="text"]')[1];
-    if(top)reveal.to(top.querySelectorAll<HTMLElement>("[data-word]"),{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,stagger:.09,ease:"power2.out",clearProps:"filter,transform"},.15);
-    if(bottom)reveal.to(bottom.querySelectorAll<HTMLElement>("[data-word]"),{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,stagger:.09,ease:"power2.out",clearProps:"filter,transform"},.3);
+    if(top)reveal.fromTo(top.querySelectorAll<HTMLElement>("[data-word]"),{opacity:0,filter:"blur(12px)",yPercent:25},{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,stagger:.09,ease:"power2.out",clearProps:"filter,transform"},.15);
+    if(bottom)reveal.fromTo(bottom.querySelectorAll<HTMLElement>("[data-word]"),{opacity:0,filter:"blur(12px)",yPercent:25},{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,stagger:.09,ease:"power2.out",clearProps:"filter,transform"},.3);
     const starts=[.4,.55,.65,.75,.9];
-    readyTextGroup.forEach((el,i)=>reveal.to(el,{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},starts[i]??.9));
+    readyTextGroup.forEach((el,i)=>reveal.fromTo(el,{opacity:0,filter:"blur(10px)"},{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},starts[i]??.9));
     if(readyImage&&!reduced){
       gsap.fromTo(readyImage,{yPercent:.75,rotation:-.75},{yPercent:-.75,rotation:.75,duration:3.2,ease:"sine.inOut",yoyo:true,repeat:-1});
       const toY=gsap.quickTo(readyImage,"rotationY",{duration:.8,ease:"power2.out"});
@@ -136,12 +136,12 @@ export default function Page(){
     if(wordmark)intro.to(wordmark,{opacity:0,duration:.4,ease:"power1.out"},.7);
     intro.to(state,{keyframes:{face:[0,.8,.15,1,.55,1]},duration:.45,ease:"none"},1.05);
     intro.to(state,{keyframes:{flash:[0,1,0]},duration:.7,ease:"power1.out"},1.05);
-    if(badge)intro.to(badge,{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.1);
+    if(badge)intro.fromTo(badge,{opacity:0,filter:"blur(10px)"},{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.1);
     if(nav)intro.fromTo(nav,{opacity:0,filter:"blur(8px)"},{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.15);
     if(headline)intro.set(headline,{opacity:1},1.25);
-    intro.to(words,{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,ease:"power2.out",stagger:.09,clearProps:"filter,transform"},1.25);
-    if(buttons)intro.to(buttons,{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.55);
-    if(lead)intro.to(lead,{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.85);
+    intro.fromTo(words,{opacity:0,filter:"blur(12px)",yPercent:25},{opacity:1,filter:"blur(0px)",yPercent:0,duration:.7,ease:"power2.out",stagger:.09,clearProps:"filter,transform"},1.25);
+    if(buttons)intro.fromTo(buttons,{opacity:0,filter:"blur(10px)"},{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.55);
+    if(lead)intro.fromTo(lead,{opacity:0,filter:"blur(10px)"},{opacity:1,filter:"blur(0px)",duration:.6,ease:"power2.out",clearProps:"filter"},1.85);
     if(loader)intro.set(loader,{autoAlpha:0},1.5);
     intro.to({}, {duration:0},INTRO_END);
   },wrap);
