@@ -1,18 +1,23 @@
 
+import { useState } from "react";
 import styles from "./Nav.module.css";
-export default function Nav({theme}:{theme:"light"|"dark"}){
- return <header className={styles.nav} data-nav="true" data-theme={theme}>
-  <a className={styles.logo} href="#home" aria-label="Henok Molla home">HM<span>.</span>DESK</a>
-  <nav className={styles.pill} aria-label="Main navigation">
-   <a className={theme==="light"?styles.active:""} href="#about">About</a>
-   <a href="#skills">Skills</a>
-   <a className={theme==="dark"?styles.active:""} href="#projects">Projects</a>
-   <a href="#experience">Journey</a>
-   <a href="#contact">Contact</a>
-  </nav>
-  <div className={styles.actions}>
-   <a className={styles.account} href="https://github.com/Henok-A-M" target="_blank" rel="noopener noreferrer"><span className={styles.accountIcon}>⌁</span> GitHub</a>
-   <a className={styles.cta} href="#projects">View Projects</a>
-  </div>
+const navItems:[string,string][]=[
+ ["Main","#home"],["Platform","#skills"],["Use","#about"],["Cases","#projects"],
+ ["Integrations","#projects"],["Journal","#experience"],["Contact","#contact"]
+];
+export default function Nav(){
+ const [open,setOpen]=useState(false);
+ return <header className={styles.nav} data-reveal="nav">
+   <a href="#home" className={styles.logo} aria-label="Easylog hero, return to top"><img src="https://assets.uberdesigner.ai/easylog/logo.svg" width="90" height="30" alt="easylog"/></a>
+   <nav className={styles.pill} aria-label="Main navigation">
+     {navItems.map(([label,href])=><a href={href} key={label}>{label}</a>)}
+   </nav>
+   <div className={styles.menuWrap}>
+    <button type="button" className={styles.menu} aria-expanded={open} aria-controls="easylog-menu" onClick={()=>setOpen(v=>!v)}>{open?"close":"menu"}</button>
+    {open&&<nav id="easylog-menu" className={styles.dropdown} aria-label="All portfolio sections">
+      {navItems.map(([label,href])=><a key={label} href={href} onClick={()=>setOpen(false)}>{label}</a>)}
+      <a href="https://github.com/Henok-A-M" target="_blank" rel="noopener noreferrer" onClick={()=>setOpen(false)}>GitHub ↗</a>
+    </nav>}
+   </div>
  </header>;
 }
