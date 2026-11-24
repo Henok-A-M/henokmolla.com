@@ -1,12 +1,2 @@
-:root {
-  --u:min(0.069444444vw,0.131578947svh);
-  --night:#02060b; --stage:#061120; --white:#ffffff; --black:#000000;
-  --ice:#61a6f6; --frost:#609aca; --track:rgba(31,72,91,.22);
-  --pill-fill:rgba(255,255,255,.12); --card-fill:rgba(255,255,255,.05);
-  --card-tint:rgba(255,255,255,.16); --glass-edge:rgba(255,255,255,.25);
-  --pill-radius:99px; --card-radius:calc(28 * var(--u));
-  --head-sans:calc(80 * var(--u)); --head-serif:calc(92 * var(--u));
-  --counter-size:calc(92 * var(--u)); --body-copy:calc(18 * var(--u));
-  --pad-x:calc(28 * var(--u)); --header-pady:calc(20 * var(--u));
-}
-@media(max-width:1023px){:root{--u:min(0.240963855vw,0.131578947svh);--head-sans:calc(49.8 * var(--u));--head-serif:calc(57.27 * var(--u));--counter-size:calc(66.7 * var(--u));--body-copy:calc(16 * var(--u));--pad-x:calc(18 * var(--u));--header-pady:calc(16 * var(--u));}}
+:root{--u:min(.069444444vw,.131578947svh);--white:#fff;--ink:#151515;--ink-button:#161616;--ink-header:#161515;--grey:#717171;--steel:#99b6d2;--glass:rgba(168,168,168,.20);--glass-edge:rgba(255,255,255,.2);--glass-shine:rgba(255,255,255,.25);--sky-tint:rgba(126,25,12,.4);--cursor:rgba(255,255,255,.2);--fit-display:.93;--fit:.915;--display-size:calc(96 * var(--fit-display) * var(--u));--display-leading:calc(91.5 * var(--u));--body-size:calc(20 * var(--fit) * var(--u));--body-leading:calc(23 * var(--u));--small-size:calc(16 * var(--fit) * var(--u));--nav-size:calc(14 * var(--fit) * var(--u));--ui-size:calc(16 * var(--fit) * var(--u));--counter-size:calc(28 * var(--fit) * var(--u));--card-text-size:calc(40px * var(--fit));--cap:.71;--edge:calc(20 * var(--u));--bottom:calc(40 * var(--u));--pill:100px}
+@media(max-width:1023px){:root{--u:min(.240963855vw,.131578947svh);--display-size:calc(48 * var(--fit-display) * var(--u));--display-leading:calc(45.75 * var(--u));--body-size:calc(18 * var(--fit) * var(--u));--body-leading:calc(20.7 * var(--u));--ui-size:calc(14 * var(--fit) * var(--u))}}
