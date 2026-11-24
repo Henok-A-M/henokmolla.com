@@ -6,7 +6,7 @@
 .square{width:calc(11 * var(--u));height:calc(11 * var(--u));background:#fff;border-radius:2px;flex:none}
 .headline{font-size:var(--display-size);line-height:var(--display-leading);letter-spacing:-.02em;font-weight:400;margin-top:calc(93.8 * var(--u) - var(--cap) * var(--display-size));opacity:0}
 .headline>span{display:block;white-space:nowrap}
-.word{display:inline-block;white-space:pre;opacity:0;will-change:opacity,filter,transform
+.word{display:inline-block;white-space:pre;opacity:0;will-change:opacity,filter,transform}
 .buttons{position:absolute;left:var(--edge);bottom:var(--bottom);display:flex;gap:calc(12 * var(--u));opacity:0}
 .buttons a{height:calc(47 * var(--u));border-radius:100px;display:inline-flex;align-items:center;justify-content:center;gap:calc(12 * var(--u));padding:0 calc(18 * var(--u));font-size:var(--small-size);white-space:nowrap;transition:transform .2s cubic-bezier(.22,1,.36,1)}
 .buttons a:hover{transform:scale(1.03)}
