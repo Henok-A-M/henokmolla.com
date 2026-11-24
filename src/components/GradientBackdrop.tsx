@@ -24,39 +24,33 @@ export default function GradientBackdrop({ paused }: { paused: boolean }) {
       lastFrame = now;
       while (waves.length && time - waves[0].born > 1.6) waves.shift();
       ctx.clearRect(0, 0, width, height);
-      // Translucent curtains lean across the sky. Each cursor ripple displaces
-      // the curtain's silhouette before its light fades back into the scene.
-      const colors = ["87,111,224", "78,202,189", "154,130,220"];
-      const step = Math.max(7, width / 145);
-      for (let layer = 0; layer < colors.length; layer++) {
-        const ribbon = new Path2D();
-        for (let x = -step; x <= width + step; x += step) {
-          const u = x / width;
-          const phase = time * .13 + layer * .78;
-          let y = height * (.40 + layer * .10 + .19 * Math.sin(5*u + phase)
-            + .06 * Math.sin(11*u - phase) - .13*u);
-          for (const wave of waves) {
-            const age = time - wave.born;
-            const band = (Math.hypot(x-wave.x, y-wave.y) - age*210) / 55;
-            y += 31 * Math.sin(band*2) * Math.exp(-band*band) * (1-age/1.6);
+      // Each sheet is woven from continuous curves. Highlights gather at its folds.
+      const layers = ["144,125,184", "116,195,196"];
+      for (const [layer, color] of layers.entries()) {
+        const phase = time * .095 + layer * 1.4;
+        const steps = 72;
+        const strands = width < 650 ? 26 : 42;
+        for (let i = 0; i < strands; i++) {
+          const v = i / (strands - 1);
+          ctx.beginPath();
+          for (let j = 0; j <= steps; j++) {
+            const u = j / steps, x = u * width;
+            const fold = Math.sin(6*u + phase + v*.75);
+            let y = height * (.53 + layer*.13 + fold*.16 - u*.16
+              + (v-.5)*(.16 + .14*Math.cos(5*u-phase)));
+            for (const wave of waves) {
+              const age = time-wave.born;
+              const band = (Math.hypot(x-wave.x,y-wave.y)-age*210)/55;
+              y += 25*Math.sin(band*2)*Math.exp(-band*band)*(1-age/1.6);
+            }
+            if (j === 0) ctx.moveTo(x,y);
+            else ctx.lineTo(x,y);
           }
-          // Vertical light columns feather upward from the lower lip.
-          const reach = height * (.23 + .13 * (.5 + .5*Math.cos(6*u-phase)));
-          const light = ctx.createLinearGradient(x,y-reach,x,y+height*.05);
-          const color = colors[layer];
-          const strength = .33 + .15*Math.sin(u*24+phase)*Math.sin(u*8-phase);
-          light.addColorStop(0, "rgba("+color+",0)");
-          light.addColorStop(.70, "rgba("+color+","+strength*.36+")");
-          light.addColorStop(.83, "rgba("+color+","+strength+")");
-          light.addColorStop(1, "rgba("+color+",0)");
-          ctx.fillStyle = light;
-          ctx.fillRect(x,y-reach,step+.2,reach+height*.05);
-          if (x === -step) ribbon.moveTo(x,y-height*.014);
-          else ribbon.lineTo(x,y-height*.014);
+          ctx.lineWidth = Math.max(1,height*.18/strands);
+          ctx.strokeStyle = "rgba("+color+","+
+            ((.035+.13*Math.pow(v,3))*Math.sin(Math.PI*v)**.4)+")";
+          ctx.stroke();
         }
-        ctx.strokeStyle = "rgba("+colors[layer]+",.12)";
-        ctx.lineWidth = 1;
-        ctx.stroke(ribbon);
       }
       if (moving()) frame = requestAnimationFrame(schedule);
     }
