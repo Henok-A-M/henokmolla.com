@@ -8,7 +8,6 @@ import type { LogPair } from "../lib/loadImages";
 import styles from "./Hero.module.css";
 export type HeroMotion={zoom:number;pixel:number};
 const PIXEL_START=6,ZOOM_START=2.6,LOAD_TIMEOUT=11000;
-const introTargets=["nav","lead","bottom","action","cta"] as const;
 function Characters({text}:{text:string}){
  return <>{Array.from(text).map((c,i)=><span key={i} data-character="true" className={styles.character}>{c===" "?"\u00a0":c}</span>)}</>;
 }
