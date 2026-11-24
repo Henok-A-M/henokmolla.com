@@ -1,8 +1,0 @@
-
-.loader{position:absolute;inset:0;z-index:0;background:white;display:grid;place-items:center;pointer-events:none}
-.wordmark{position:absolute;left:50%;top:50%;width:calc(1351 * var(--u));transform:translate(-50%,-50%);opacity:.15}
-.wordmark img{display:block;width:100%;opacity:.28}
-.wordmark span{position:absolute;inset:0;display:grid;place-items:center;white-space:nowrap;color:#99b6d2;font-weight:400;font-size:calc(123 * var(--u));letter-spacing:-.065em}
-.counter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:var(--counter-size);font-weight:400;line-height:1;color:#151515;white-space:nowrap;font-variant-numeric:tabular-nums}
-@media(max-width:1023px){.wordmark{width:calc(100vw - 40 * var(--u))}.wordmark span{font-size:calc(42 * var(--u))}}
-@media(prefers-reduced-motion:reduce){.counter,.wordmark{display:none}}
