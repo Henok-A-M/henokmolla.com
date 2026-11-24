@@ -1,6 +1,13 @@
 import {useEffect,useRef,useState} from "react";
 import legacy from "../legacy/portfolio.html?raw";
-const portfolioMarkup = { __html: legacy };
+import scenarioImage from "../../assets/images/image(5)(1).png?url";
+import captureImage from "../../assets/images/image(6)(1).png?url";
+
+const portfolioMarkup = {
+  __html: legacy
+    .replace('src="assets/images/image(5)(1).png"', `src="${scenarioImage}"`)
+    .replace('src="assets/images/image(6)(1).png"', `src="${captureImage}"`),
+};
 import {initLegacy} from "../lib/legacy";
 
 const nodes=[{id:"about",name:"Identity",sub:"My story",lat:.32,lon:0},{id:"projects",name:"Projects",sub:"Lab evidence",lat:.05,lon:1.58},{id:"skills",name:"Capabilities",sub:"Technical skills",lat:-.55,lon:2.8},{id:"experience",name:"Journey",sub:"Education & experience",lat:.55,lon:4.1},{id:"contact",name:"Connect",sub:"Get in touch",lat:-.55,lon:5.1}];
