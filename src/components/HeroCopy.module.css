@@ -1,0 +1,25 @@
+
+.hero{position:absolute;inset:0;z-index:2;color:white;pointer-events:none}
+.hero :is(a,button){pointer-events:auto}
+.top{position:absolute;left:var(--edge);bottom:calc(137 * var(--u));max-width:calc(100vw - 40 * var(--u))}
+.badge{display:flex;align-items:center;gap:calc(8 * var(--u));font-size:var(--small-size);line-height:1.15;font-weight:400;letter-spacing:-.01em;opacity:0;filter:blur(10px)}
+.square{width:calc(11 * var(--u));height:calc(11 * var(--u));background:#fff;border-radius:2px;flex:none}
+.headline{font-size:var(--display-size);line-height:var(--display-leading);letter-spacing:-.02em;font-weight:400;margin-top:calc(93.8 * var(--u) - var(--cap) * var(--display-size));opacity:0}
+.headline>span{display:block;white-space:nowrap}
+.word{display:inline-block;white-space:pre;opacity:0;filter:blur(12px);transform:translateY(25%);will-change:opacity,filter,transform}
+.buttons{position:absolute;left:var(--edge);bottom:var(--bottom);display:flex;gap:calc(12 * var(--u));opacity:0;filter:blur(10px)}
+.buttons a{height:calc(47 * var(--u));border-radius:100px;display:inline-flex;align-items:center;justify-content:center;gap:calc(12 * var(--u));padding:0 calc(18 * var(--u));font-size:var(--small-size);white-space:nowrap;transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.buttons a:hover{transform:scale(1.03)}
+.primary{background:#fff;color:#161616}
+.secondary{color:#fff;border:1px solid #fff;font-weight:500}
+.lead{position:absolute;right:var(--edge);bottom:var(--bottom);width:calc(446 * var(--u));max-width:calc(100vw - 40 * var(--u));font-size:var(--body-size);line-height:var(--body-leading);letter-spacing:-.01em;font-weight:400;opacity:0;filter:blur(10px)}
+@media(max-width:1023px){
+ .top{left:var(--edge);right:var(--edge);bottom:auto;top:calc(110.2 * var(--u) - var(--cap) * var(--small-size));max-width:calc(375 * var(--u))}
+ .headline{margin-top:calc(56.7 * var(--u) - var(--cap) * var(--display-size))}
+ .headline>span{white-space:normal}
+ .lead{left:var(--edge);right:var(--edge);width:auto;max-width:calc(375 * var(--u));bottom:calc(116 * var(--u))}
+ .buttons{right:var(--edge);bottom:var(--bottom)}
+ .buttons a{flex:1;min-width:0}
+}
+@media(max-width:415px){.headline{font-size:calc(46 * var(--fit-display) * var(--u))}}
+@media(prefers-reduced-motion:reduce){.word{will-change:auto}}

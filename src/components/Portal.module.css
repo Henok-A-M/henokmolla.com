@@ -1,0 +1,22 @@
+
+.media,.over{position:absolute;inset:0;overflow:hidden;transform:scale(0);transform-origin:50% 50%;will-change:transform;pointer-events:none}
+.media{z-index:1;background:linear-gradient(165deg,#3f668b,#edb78b 64%,#90766a)}
+.over{z-index:3}
+.photoBox{position:absolute;--img-w:max(calc(1612 * var(--u)),100vw,calc(100svh * 1.154 * 4096 / 2640));width:var(--img-w);aspect-ratio:4096 / 2640;left:calc(50% - var(--img-w)/2);top:calc(49.87% - var(--img-w) * 2640 / 4096 * .5657);will-change:transform}
+.photo{display:block;width:100%;height:100%;object-fit:fill;image-rendering:auto}
+.photoBox::after{content:"";position:absolute;inset:0;pointer-events:none;background:transparent}
+.lightPlane,.portalPlane{position:absolute;left:0;top:0;width:652px;height:1024px;transform-origin:0 0;will-change:transform}
+.lightFace{position:absolute;inset:0;opacity:0;filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 14px rgba(255,255,255,.55));mask-image:linear-gradient(to bottom left,#000 20%,rgba(0,0,0,.45) 60%,transparent 92%)}
+.cardLandscape{position:absolute;left:0;top:0;width:1024px;height:652px;transform-origin:0 0;transform:translateX(652px) rotate(90deg)}
+.cardOutline{position:absolute;inset:0;border:3px solid #fff;border-radius:28px}
+.cardLogo{position:absolute;left:517.15px;top:42.15px;width:448.557px;height:78.1889px;object-fit:contain}
+.chip{position:absolute;left:58px;top:270px;width:115.912px;height:111.796px}
+.cardName,.cardNumber{position:absolute;top:565px;font:400 var(--card-text-size)/1 "Geist",sans-serif;color:white;white-space:nowrap}
+.cardName{left:59px;letter-spacing:-.01em}.cardNumber{right:58px;letter-spacing:.01em;font-size:29px}
+.portalFill,.portalRim{position:absolute;inset:0;border-radius:28px;opacity:0;pointer-events:none}
+.portalFill{background:#fff}
+.portalRim{border:16px solid #fff;box-shadow:0 0 36px 8px rgba(255,255,255,.85),inset 0 0 28px 6px rgba(255,255,255,.7)}
+@media(max-width:1023px){
+ .photoBox{--img-w:max(calc(1462 * min(100vw / 415,100svh / 900)),100vw,calc(100svh * 1.049 * 4096 / 2640));left:calc(50% + 8.5 * var(--u) - var(--img-w)/2);top:calc(54.43% - var(--img-w) * 2640 / 4096 * .5657)}
+ .photoBox::after{background:linear-gradient(to bottom,rgba(126,25,12,.4) 3.99%,transparent 33.78%)}
+}
