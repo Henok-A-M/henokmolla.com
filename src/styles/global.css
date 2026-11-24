@@ -87,3 +87,74 @@ body{background:#3085d2}
 :focus-visible{outline:2px solid #d0f24b;outline-offset:4px}
 .legacy-content{color:#151515}
 .legacy-content #about,.legacy-content #skills,.legacy-content #projects,.legacy-content #experience,.legacy-content #contact{scroll-margin-top:28px}
+
+
+/* ===== HENOK IMMERSIVE V5: consistent editorial portfolio ===== */
+html,body{background:#f4f8fd}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+body{font-family:"Instrument Sans",system-ui,sans-serif}
+.legacy-content{background:#f4f8fd!important;color:#1d3550;font-family:"Instrument Sans",system-ui,sans-serif;overflow:hidden}
+.legacy-content::before{background:radial-gradient(ellipse at 91% 4%,#a4dff140,transparent 32%),radial-gradient(ellipse at 3% 48%,#93cfff25,transparent 38%)}
+.legacy-content .editorial-bridge{position:relative;max-width:1500px;margin:0 auto;padding:clamp(75px,11vw,145px) 6% 95px}
+.bridge-top{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #8caebd59;padding-top:22px;font-size:11px;color:#527289;letter-spacing:.16em}
+.bridge-marker{color:#7c94a7}
+.bridge-main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr);align-items:end;gap:70px;margin-top:75px}
+.bridge-main h2{font-family:"Instrument Sans",sans-serif;font-size:clamp(42px,5.25vw,83px);line-height:1.04;letter-spacing:-.063em;font-weight:400;color:#102d47}
+.bridge-main h2 em{font-family:"Instrument Serif",Georgia,serif;font-weight:400;color:#387fa1;letter-spacing:-.045em}
+.bridge-main p{font-size:clamp(14px,1.23vw,17px);line-height:1.85;color:#476276;max-width:420px}
+.bridge-track{display:flex;justify-content:space-between;align-items:center;gap:17px;padding:20px 0;margin-top:70px;border-top:1px solid #8aaec159;border-bottom:1px solid #8aaec159;color:#52758b;font-size:11px;letter-spacing:.12em}
+.bridge-track span:nth-child(even){color:#53b5c5;font-size:18px}
+.legacy-content .section{max-width:1420px;padding:clamp(80px,9vw,125px) 6%;border-top:1px solid #a2bfce55;scroll-margin-top:75px}
+.legacy-content .section>.kicker{font-family:"Instrument Sans",sans-serif;font-size:11px;letter-spacing:.2em;color:#347c9f!important;font-weight:600;margin-bottom:14px}
+.legacy-content .section h2,.legacy-content .section>.editorial-title{font-family:"Instrument Sans",sans-serif;font-size:clamp(41px,5.5vw,78px)!important;line-height:1.09;font-weight:400;letter-spacing:-.058em!important;color:#142f48}
+.legacy-content .section>p{font-size:15px;line-height:1.8;color:#526b7d}
+.legacy-content .aboutgrid{gap:clamp(24px,3vw,50px);margin-top:45px}
+.legacy-content .aboutgrid>div>p{font-size:16px;line-height:1.88;color:#496379;max-width:690px}
+.legacy-content .featurebox{background:linear-gradient(132deg,#fff,#f0f8fd);border:1px solid #bbd6e2;border-radius:24px;padding:clamp(24px,3vw,37px);box-shadow:0 21px 60px #1d537211}
+.legacy-content .featurebox h3{font-size:clamp(19px,2vw,24px);letter-spacing:-.02em;color:#193c55}
+.legacy-content .featurebox p{color:#4b6a81}
+.legacy-content .featurelabel{letter-spacing:.13em;font-size:11px;color:#4284a3}
+.legacy-content .aboutitem small{font-size:12px;color:#5c7a90}
+.legacy-content .abouticon{border-radius:12px;background:#dceff5;color:#167a9d}
+.legacy-content .skillsgrid{gap:15px;margin-top:36px}
+.legacy-content .skillcard{background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(232,246,252,.92));border:1px solid #bbd7e4;border-radius:20px;box-shadow:0 14px 40px #1e577411;min-height:195px;padding:clamp(22px,2.6vw,34px);transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s,box-shadow .35s}
+.legacy-content .skillcard:hover{transform:translateY(-7px);border-color:#77bdce;box-shadow:0 24px 55px #23688728}
+.legacy-content .skillcard .symbol{display:grid;place-items:center;width:49px;height:49px;padding:9px;background:#daf2f7;border:1px solid #b0e4e8;border-radius:13px;color:#167e9e;margin-bottom:24px}
+.legacy-content .skillcard .symbol svg{width:31px;height:31px}
+.legacy-content .skillcard h3{font-size:20px;color:#173d56;margin-bottom:8px}
+.legacy-content .skillcard p{font-size:13px;line-height:1.7;color:#5b768a}
+.legacy-content .foldergrid{gap:11px}
+.legacy-content .folder{border:1px solid #b6d5df;border-radius:16px;background:linear-gradient(145deg,#ffffff,#edf7fa);box-shadow:0 8px 24px #16536e0c;transition:transform .28s,background .28s,border-color .28s}
+.legacy-content .folder:hover{transform:translateY(-3px);border-color:#71bbd2;background:#e4f5fc}
+.legacy-content .folder.active{background:#def2f8;border-color:#4caac2;box-shadow:0 10px 30px #217caa20}
+.legacy-content .filewindow{border-radius:21px;overflow:hidden;border-color:#b5d4e1;background:#fbfdfe;box-shadow:0 22px 70px #16507620}
+.legacy-content .bar{background:#e8f2f6;color:#3d667e}
+.legacy-content .filebody{color:#21455d}
+.legacy-content .filetag{background:#e1f1f7;border:1px solid #b0d2e0;color:#276b8f;border-radius:99px}
+.legacy-content .vlan-demo{border-radius:17px;border-color:#b5d4e0;background:#eff8fc}
+.legacy-content .vlan-choice{border-radius:99px}
+.legacy-content .journey-logo-box{background:#fff!important;border-color:#cadde8!important;border-radius:15px}
+.legacy-content .journey-brand-copy h3{color:#174561!important}
+.legacy-content .org-link{color:#217c9c!important;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.legacy-content .social-link{background:#e5f4f8!important;color:#1c6683!important;border:1px solid #a7cdda!important;border-radius:99px!important;transition:transform .3s,background .3s}
+.legacy-content .social-link:hover{transform:translateY(-3px);background:#cceef6!important}
+.legacy-content .btn.alt{border-radius:99px;background:#e9f5f9;border:1px solid #b1d2df;color:#1b6785}
+.legacy-content footer{background:#e9f4f9;color:#51768d;border-top:1px solid #bfdce9}
+.legacy-content.motion-ready [data-reveal]{transform:translate3d(0,23px,0);opacity:0;transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.legacy-content.motion-ready [data-reveal].is-visible{transform:none;opacity:1}
+@media(max-width:800px){
+ .bridge-main{display:block;margin-top:42px}.bridge-main h2{font-size:clamp(38px,8.4vw,61px)}.bridge-main p{margin-top:27px;max-width:610px}
+ .bridge-track{flex-wrap:wrap;justify-content:flex-start;margin-top:47px;gap:12px;font-size:10px}
+ .legacy-content .section{padding:75px 6%}
+ .legacy-content .section h2,.legacy-content .section>.editorial-title{font-size:clamp(37px,8vw,58px)!important}
+ .legacy-content .skillcard{padding:20px;min-height:178px}
+}
+@media(max-width:450px){
+ .legacy-content .editorial-bridge{padding:82px 6% 65px}
+ .bridge-top{font-size:9px;letter-spacing:.12em}
+ .bridge-main h2{font-size:35px}
+ .bridge-main p{font-size:13px}
+ .bridge-track{font-size:9px}
+ .legacy-content .section h2,.legacy-content .section>.editorial-title{font-size:39px!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}.legacy-content .skillcard:hover,.legacy-content .folder:hover,.legacy-content .social-link:hover{transform:none}}
