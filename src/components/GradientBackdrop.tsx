@@ -5,10 +5,10 @@ const Aurora = lazy(async () => {
   return {
     default: () => (
       <ShaderGradientCanvas pixelDensity={1} pointerEvents="none" powerPreference="low-power" style={{ position: "absolute", inset: 0 }}>
-        <ShaderGradient type="plane" animate="on" lightType="3d" grain="off"
-          color1="#062133" color2="#43a7a4" color3="#304f85"
-          cDistance={3.6} cPolarAngle={90} uTime={3} uSpeed={0.16}
-          uFrequency={4} uStrength={3.1} uDensity={1.3} brightness={1.05} />
+        <ShaderGradient type="waterPlane" animate="on" lightType="3d" grain="off"
+          color1="#101116" color2="#a9bdde" color3="#333e58"
+          cDistance={3.1} cAzimuthAngle={38} cPolarAngle={74} rotationZ={-18} uTime={5} uSpeed={0.13}
+          uFrequency={2.6} uStrength={2.4} uDensity={1.15} brightness={0.92} />
       </ShaderGradientCanvas>
     ),
   };
@@ -121,10 +121,10 @@ export default function GradientBackdrop({ paused }: { paused: boolean }) {
     <div aria-hidden="true" style={{ position:"fixed", inset:0, zIndex:-1, overflow:"hidden", pointerEvents:"none" }}>
     {!still && !paused && <CursorWaves surface={surface} />}
     <div ref={surface} style={{ position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none",
-      background: "radial-gradient(ellipse at 72% 16%, #315d7c, transparent 65%), radial-gradient(ellipse at 25% 90%, #206064, transparent 64%), #06131e" }}>
+      background: "linear-gradient(153deg, #090a10 5%, #202433 31%, #62718c 39%, #30394d 44%, #10131d 58%, #45516b 76%, #131620 89%)" }}>
       {!still && !paused && <Fallback><Suspense fallback={null}><Aurora /></Suspense></Fallback>}
       <div style={{ position: "absolute", inset: 0,
-        background: "linear-gradient(90deg, #03101bba, #05142240 32%, #04132149 66%, #030c17bd)" }} />
+        background: "linear-gradient(90deg, #080a10b8, #10131c33 32%, #0b0e1938 66%, #090b13bb)" }} />
     </div></div>
   );
 }
