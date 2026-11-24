@@ -54,71 +54,83 @@ export default function Network(){
    const globe = stage.current;
    if (!globe) return;
    let lastWheel = -Infinity;
-   function advance(target: EventTarget | null) {
-     const id = motion.current.focus ||
+   function destination(target: EventTarget | null) {
+     return motion.current.focus ||
        (target instanceof Element && target.closest<HTMLElement>("[data-node]")?.dataset.node) || "about";
-     if (pendingSection.current === id) {
-       select(id);
-     } else {
+   }
+   function zoomForward(amount: number, target: EventTarget | null, newGesture: boolean) {
+     const m = motion.current;
+     const id = destination(target);
+     if (newGesture && pendingSection.current === id) {
+       aim(id);
+       m.targetZoom = 2.35; // The camera opens the section when it reaches the node.
+       return;
+     }
+     if (newGesture || !pendingSection.current) {
        pendingSection.current = id;
        aim(id);
-       motion.current.targetZoom = 1.5;
      }
+     if (m.targetZoom < 2.05) m.targetZoom = Math.min(2, m.targetZoom + amount);
+   }
+   function zoomBack(amount: number) {
+     pendingSection.current = "";
+     if (motion.current.targetZoom >= 2.05) motion.current.targetZoom = Math.min(2, motion.current.zoom);
+     zoomAt(-amount);
    }
    function handleWheel(event: WheelEvent) {
      if (!event.cancelable || !event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
      const delta = event.deltaY * unit;
+     event.preventDefault();
      if (event.ctrlKey) {
-       event.preventDefault();
        pendingSection.current = "";
+       lastWheel = -Infinity;
        zoomAt(Math.max(-.35, Math.min(.35, -delta * .012)), event.clientX, event.clientY);
        return;
      }
+     const amount = Math.min(.35, Math.abs(delta) * .0035);
      if (delta < 0) {
-       pendingSection.current = "";
        lastWheel = -Infinity;
-       if (window.scrollY <= 1 && motion.current.targetZoom > .5) {
-         event.preventDefault();
-         zoomAt(Math.max(-.35, delta * .0025));
-       }
+       zoomBack(amount);
        return;
      }
-     event.preventDefault();
      const now = performance.now();
-     // A trackpad swipe emits a stream, including decaying momentum events.
      const newGesture = now - lastWheel > 150 || event.deltaMode === 1;
      lastWheel = now;
-     if (newGesture) advance(event.target);
+     zoomForward(amount, event.target, newGesture);
    }
-   let touch: { x:number; y:number; target:EventTarget | null } | null = null;
-   let vertical = false;
+   let touch: { x:number; y:number; previousY:number; target:EventTarget | null } | null = null;
+   let previousDirection = 0;
    function startSwipe(event: TouchEvent) {
-     vertical = false;
+     previousDirection = 0;
      const finger = event.touches[0];
-     touch = event.touches.length === 1 ? {x:finger.clientX,y:finger.clientY,target:event.target} : null;
+     touch = event.touches.length === 1 ? {x:finger.clientX,y:finger.clientY,previousY:finger.clientY,target:event.target} : null;
+     if (!touch) pendingSection.current = "";
    }
    function moveSwipe(event: TouchEvent) {
-     if (!touch || event.touches.length !== 1) return;
-     const dy = touch.y - event.touches[0].clientY;
-     if (dy > 4 && dy > Math.abs(event.touches[0].clientX - touch.x)) vertical = true;
-     if (vertical && event.cancelable) event.preventDefault();
+     if (!touch || event.touches.length !== 1 || !event.cancelable) return;
+     const finger = event.touches[0], dy = touch.y - finger.clientY;
+     if (Math.abs(dy) < 6 || Math.abs(dy) < Math.abs(finger.clientX-touch.x)) return;
+     event.preventDefault();
+     const step = touch.previousY - finger.clientY;
+     if (!step) return;
+     const direction = Math.sign(step);
+     if (direction > 0) zoomForward(step*.005, touch.target, previousDirection !== direction);
+     else zoomBack(-step*.005);
+     previousDirection = direction;
+     touch.previousY = finger.clientY;
    }
-   function endSwipe(event: TouchEvent) {
-     if (vertical && touch && touch.y - event.changedTouches[0].clientY >= 32) advance(touch.target);
-     cancelSwipe();
-   }
-   function cancelSwipe() { touch = null; vertical = false; }
+   function cancelSwipe() { touch = null; previousDirection = 0; }
    globe.addEventListener("wheel", handleWheel, { passive:false });
    globe.addEventListener("touchstart", startSwipe, { passive:true });
    globe.addEventListener("touchmove", moveSwipe, { passive:false });
-   globe.addEventListener("touchend", endSwipe);
+   globe.addEventListener("touchend", cancelSwipe);
    globe.addEventListener("touchcancel", cancelSwipe);
    return () => {
      globe.removeEventListener("wheel", handleWheel);
      globe.removeEventListener("touchstart", startSwipe);
      globe.removeEventListener("touchmove", moveSwipe);
-     globe.removeEventListener("touchend", endSwipe);
+     globe.removeEventListener("touchend", cancelSwipe);
      globe.removeEventListener("touchcancel", cancelSwipe);
    };
  }, []);
@@ -142,7 +154,7 @@ export default function Network(){
   <div className="network-opening" style={{ display: "flex", flexDirection: "column", minHeight: "100dvh" }}>
   <header className="network-header"><button className="network-brand" onClick={reset}><span className="brand-icon">HM</span><span>HENOK MOLLA<small>NETWORK / SECURITY</small></span></button><nav aria-label="Portfolio sections"><button className={!active?"selected":""} onClick={reset}>Overview</button>{nodes.map(n=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}>{n.id==="about"?"About":n.name}</button>)}</nav><a className="header-git" href="https://github.com/Henok-A-M" target="_blank" rel="noreferrer">GitHub</a></header>
   <div className="network-layout"><section className="network-intro profile-console"><div className="eyeline"><i/> PERSONAL NETWORK · ONLINE</div><button className="profile-portrait" onClick={()=>select("about")} aria-label="Open about Henok"><img src={portrait} alt="Henok Molla"/><span className="portrait-corner corner-tl"/><span className="portrait-corner corner-br"/></button><h1>Henok Molla.</h1><p className="profile-role">Aspiring Network &amp; Cybersecurity Engineer</p><p className="profile-location">Seattle · Year Up United<br/>City University of Seattle</p><button className="profile-about" onClick={()=>select("about")}>About me <span>＋</span></button></section>
-   <div className="network-stage" ref={stage} onDragStart={e=>e.preventDefault()} onClickCapture={e=>{if(e.detail && motion.current.moved){e.preventDefault();e.stopPropagation();}}} onPointerDown={e=>{if(e.button!==0)return;const m=motion.current;m.startX=e.clientX;m.startY=e.clientY;m.moved=m.touches.size>0;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;if(Math.hypot(e.clientX-m.startX,e.clientY-m.startY)>5){m.moved=true;if(!e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.setPointerCapture(e.pointerId);}m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(e.pointerType==="touch" && m.startY-e.clientY>Math.abs(e.clientX-m.startX))return;if(m.focus){pendingSection.current="";m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}}>
+   <div className="network-stage" ref={stage} onDragStart={e=>e.preventDefault()} onClickCapture={e=>{if(e.detail && motion.current.moved){e.preventDefault();e.stopPropagation();}}} onPointerDown={e=>{if(e.button!==0)return;const m=motion.current;m.startX=e.clientX;m.startY=e.clientY;m.moved=m.touches.size>0;m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});m.drag=true;m.lastX=e.clientX;m.lastY=e.clientY;if(m.touches.size===2){const [a,b]=[...m.touches.values()];m.pinch=Math.hypot(a.x-b.x,a.y-b.y);}if(!(e.target as HTMLElement).closest("button"))e.currentTarget.setPointerCapture(e.pointerId)}} onPointerMove={e=>{const m=motion.current;if(!m.touches.has(e.pointerId))return;if(Math.hypot(e.clientX-m.startX,e.clientY-m.startY)>5){m.moved=true;if(!e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.setPointerCapture(e.pointerId);}m.touches.set(e.pointerId,{x:e.clientX,y:e.clientY});if(m.touches.size===2){const [a,b]=[...m.touches.values()],d=Math.hypot(a.x-b.x,a.y-b.y);m.drag=false;if(m.pinch)zoomAt((d-m.pinch)*.008,(a.x+b.x)/2,(a.y+b.y)/2);m.pinch=d;return;}if(!m.drag)return;if(e.pointerType==="touch" && Math.abs(m.startY-e.clientY)>Math.abs(e.clientX-m.startX))return;if(m.focus){pendingSection.current="";m.focus="";setFocused("");}m.yaw+=(e.clientX-m.lastX)*.007;m.pitch=Math.max(-1.3,Math.min(1.3,m.pitch+(e.clientY-m.lastY)*.007));m.lastX=e.clientX;m.lastY=e.clientY}} onPointerUp={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}} onPointerCancel={e=>{const m=motion.current;m.touches.delete(e.pointerId);m.drag=false;m.pinch=0;}}>
     <canvas ref={canvas} aria-hidden="true"/><div className="scene-hud" aria-hidden="true"><span>{focused?"TARGET ACQUIRED":"NETWORK EXPLORER"}</span><span>MAGNIFICATION <b ref={readout}>100%</b></span><div className="scene-meter"><div ref={meter}/></div></div><div className="sphere-axis" aria-hidden="true"><span>HM</span><small>NETWORK CORE</small></div>{nodes.map((n,i)=><button ref={el=>{labels.current[i]=el}} className={`sphere-node ${active===n.id?"active":""} ${focused===n.id?"focused":""}`} key={n.id} data-node={n.id} onClick={()=>select(n.id)}><i/><span>{n.name}<small>{n.sub}</small></span></button>)}<div className="sphere-caption"><span>NETWORK CORE / 05 NODES</span></div>
    </div><aside className="network-side"><span className="side-kicker">SYSTEM INDEX</span>{nodes.map((n,i)=><button key={n.id} className={active===n.id?"selected":""} onClick={()=>select(n.id)}><span>0{i+1}</span><div>{n.name}<small>{n.sub}</small></div><b>＋</b></button>)}<div className="network-controls"><button onClick={()=>{const m=motion.current;if(!m.focus){const nearest=[...m.points].sort((a,b)=>b.z-a.z)[0];if(nearest)aim(nearest.id);}zoomAt(.4)}} aria-label="Zoom in">＋</button><button onClick={()=>zoomAt(-.4)} aria-label="Zoom out">−</button><button onClick={()=>setPaused(p=>!p)}>{paused?"Resume":"Pause"}</button><button onClick={reset}>Reset view</button></div></aside>
   </div>
