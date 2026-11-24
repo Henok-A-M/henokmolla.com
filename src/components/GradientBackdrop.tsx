@@ -1,130 +1,103 @@
-import { Component, Fragment, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef } from "react";
 
-const Aurora = lazy(async () => {
-  const { ShaderGradientCanvas, ShaderGradient } = await import("@shadergradient/react");
-  return {
-    default: () => (
-      <ShaderGradientCanvas pixelDensity={1} pointerEvents="none" powerPreference="low-power" style={{ position: "absolute", inset: 0 }}>
-        <ShaderGradient type="waterPlane" animate="on" lightType="3d" grain="off"
-          color1="#101116" color2="#a9bdde" color3="#333e58"
-          cDistance={3.1} cAzimuthAngle={38} cPolarAngle={74} rotationZ={-18} uTime={5} uSpeed={0.13}
-          uFrequency={2.6} uStrength={2.4} uDensity={1.15} brightness={0.92} />
-      </ShaderGradientCanvas>
-    ),
-  };
-});
-
-class Fallback extends Component<{ children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  render() { return this.state.failed ? null : this.props.children; }
-}
-
-// Red and green encode horizontal and vertical refraction. Neutral grey
-// leaves the image in place; three concentric crests bend it in opposite directions.
-function makeWaveMap() {
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 128;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return "";
-  const image = ctx.createImageData(128, 128);
-  for (let y = 0; y < 128; y++) {
-    for (let x = 0; x < 128; x++) {
-      const dx = (x - 63.5) / 64, dy = (y - 63.5) / 64;
-      const radius = Math.hypot(dx, dy);
-      const crest = radius < 1 ? Math.sin(radius * 23) * Math.sin(radius * Math.PI) ** 2 : 0;
-      const index = 4 * (128 * y + x);
-      image.data[index] = 128 + 124 * crest * dx / (radius || 1);
-      image.data[index + 1] = 128 + 124 * crest * dy / (radius || 1);
-      image.data[index + 2] = 128;
-      image.data[index + 3] = 255;
-    }
-  }
-  ctx.putImageData(image, 0, 0);
-  return canvas.toDataURL();
-}
-
-function CursorWaves({ surface }: { surface: React.RefObject<HTMLDivElement | null> }) {
-  const filter = useRef<SVGFilterElement>(null);
-  useEffect(() => {
-    const element = surface.current, effect = filter.current;
-    if (!element || !effect) return;
-    const images = Array.from(effect.querySelectorAll("feImage"));
-    const displacements = Array.from(effect.querySelectorAll("feDisplacementMap"));
-    const map = makeWaveMap();
-    if (!map) return;
-    images.forEach(image => image.setAttribute("href", map));
-    const waves = images.map(() => ({ x: 0, y: 0, birth: -Infinity, power: 0 }));
-    let next = 0, lastTime = -Infinity, lastX = 0, lastY = 0, frame = 0;
-    const resize = () => {
-      effect.setAttribute("width", String(element.clientWidth));
-      effect.setAttribute("height", String(element.clientHeight));
-    };
-    resize();
-    function draw(now: number) {
-      let alive = false;
-      waves.forEach((wave, i) => {
-        const age = (now - wave.birth) / 1250;
-        if (age >= 1) { displacements[i].setAttribute("scale", "0"); return; }
-        alive = true;
-        const radius = 24 + 162 * age;
-        const image = images[i];
-        image.setAttribute("x", String(wave.x - radius));
-        image.setAttribute("y", String(wave.y - radius));
-        image.setAttribute("width", String(radius * 2));
-        image.setAttribute("height", String(radius * 2));
-        displacements[i].setAttribute("scale", String(wave.power * (1-age)**1.5));
-      });
-      if (alive) frame = requestAnimationFrame(draw);
-      else { element!.style.filter = ""; frame = 0; }
-    }
-    function move(event: PointerEvent) {
-      const now = performance.now();
-      const distance = Math.hypot(event.clientX-lastX, event.clientY-lastY);
-      if (now-lastTime < 110 || (distance < 12 && now-lastTime < 500)) return;
-      waves[next] = { x:event.clientX, y:event.clientY, birth:now, power:Math.min(105, 55+distance*.3) };
-      next = (next+1) % waves.length;
-      lastTime = now; lastX = event.clientX; lastY = event.clientY;
-      if (!frame) { element!.style.filter = "url(#cursor-water)"; frame = requestAnimationFrame(draw); }
-    }
-    window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("resize", resize);
-    return () => { cancelAnimationFrame(frame); element.style.filter = ""; window.removeEventListener("pointermove", move); window.removeEventListener("resize", resize); };
-  }, [surface]);
-  return <svg aria-hidden="true" width="0" height="0" style={{position:"absolute"}}><defs>
-    <filter ref={filter} id="cursor-water" x="0" y="0" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-      <feFlood floodColor="#808080" result="neutral" />
-      {[0,1,2].map(i => <Fragment key={i}>
-        <feImage x="0" y="0" width="1" height="1" result={"wave"+i} />
-        <feComposite in={"wave"+i} in2="neutral" operator="over" result={"field"+i} />
-        <feDisplacementMap in={i ? "bent"+(i-1) : "SourceGraphic"} in2={"field"+i} scale="0" xChannelSelector="R" yChannelSelector="G" result={"bent"+i}/>
-      </Fragment>)}
-    </filter>
-  </defs></svg>;
-}
+type Ripple = { x: number; y: number; born: number };
 
 export default function GradientBackdrop({ paused }: { paused: boolean }) {
-  const surface = useRef<HTMLDivElement>(null);
-  const [still, setStill] = useState(true);
+  const surface = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
-    const preference = matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setStill(preference.matches || document.hidden);
-    sync();
-    preference.addEventListener("change", sync);
-    document.addEventListener("visibilitychange", sync);
+    const canvas = surface.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const waves: Ripple[] = [];
+    let width = 1, height = 1, frame = 0, time = 0, lastFrame = 0;
+    let lastX = -1000, lastY = -1000, lastDrop = -Infinity;
+    const moving = () => !paused && !motion.matches && !document.hidden;
+
+    function draw(now: number) {
+      frame = 0;
+      if (!canvas || !ctx) return;
+      if (moving() && lastFrame) time += Math.min(now - lastFrame, 70) / 1000;
+      lastFrame = now;
+      while (waves.length && time - waves[0].born > 1.6) waves.shift();
+      ctx.clearRect(0, 0, width, height);
+      const rows = width < 650 ? 42 : 68;
+      const step = Math.max(5, width / 190);
+      for (let row = 0; row < rows; row++) {
+        const d = row / (rows - 1);
+        const depth = d * d;
+        const base = height * (.39 + depth * .79);
+        const path = new Path2D();
+        for (let x = -step; x <= width + step; x += step) {
+          const u = x / width;
+          const ridge = Math.sin(u * 8 + d * 4 + time * .044)
+            + .42 * Math.sin(u * 16 - d * 5 - time * .033);
+          const banks = .3 + .7 * Math.abs(Math.cos(u * Math.PI));
+          let y = base - height * .084 * ridge * banks;
+          for (const wave of waves) {
+            const age = time - wave.born;
+            const radius = Math.hypot(x - wave.x, y - wave.y);
+            const band = (radius - age * 175) / 23;
+            if (Math.abs(band) < 3) y += 16 * Math.sin(band * 2) * Math.exp(-band * band) * (1 - age / 1.6);
+          }
+          if (x === -step) path.moveTo(x, y);
+          else path.lineTo(x, y);
+        }
+        const major = row % 6 === 0;
+        ctx.strokeStyle = major ? "rgba(244,182,112," + (.19 + .34*d) + ")" : "rgba(187,155,126," + (.085 + .22*d) + ")";
+        ctx.lineWidth = major ? 1.25 : .8;
+        ctx.stroke(path);
+      }
+      if (moving()) frame = requestAnimationFrame(schedule);
+    }
+    function schedule(now: number) {
+      if (now - lastFrame >= 32) draw(now);
+      else frame = requestAnimationFrame(schedule);
+    }
+    function refresh() {
+      cancelAnimationFrame(frame);
+      lastFrame = 0;
+      if (!moving()) waves.length = 0;
+      draw(performance.now());
+    }
+    function resize() {
+      if (!canvas || !ctx) return;
+      width = canvas.clientWidth || 1;
+      height = canvas.clientHeight || 1;
+      const ratio = Math.min(devicePixelRatio, 1.5);
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      refresh();
+    }
+    function stir(event: PointerEvent) {
+      if (!moving() || time - lastDrop < .11 || Math.hypot(event.clientX-lastX,event.clientY-lastY) < 10) return;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      lastDrop = time;
+      waves.push({x:lastX,y:lastY,born:time});
+      if (waves.length > 5) waves.shift();
+    }
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    resize();
+    window.addEventListener("pointermove", stir, { passive:true });
+    document.addEventListener("visibilitychange",refresh);
+    motion.addEventListener("change",refresh);
     return () => {
-      preference.removeEventListener("change", sync);
-      document.removeEventListener("visibilitychange", sync);
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("pointermove",stir);
+      document.removeEventListener("visibilitychange",refresh);
+      motion.removeEventListener("change",refresh);
     };
-  }, []);
-  return (
-    <div aria-hidden="true" style={{ position:"fixed", inset:0, zIndex:-1, overflow:"hidden", pointerEvents:"none" }}>
-    {!still && !paused && <CursorWaves surface={surface} />}
-    <div ref={surface} style={{ position: "absolute", inset: 0, zIndex: -1, pointerEvents: "none",
-      background: "linear-gradient(153deg, #090a10 5%, #202433 31%, #62718c 39%, #30394d 44%, #10131d 58%, #45516b 76%, #131620 89%)" }}>
-      {!still && !paused && <Fallback><Suspense fallback={null}><Aurora /></Suspense></Fallback>}
-      <div style={{ position: "absolute", inset: 0,
-        background: "linear-gradient(90deg, #080a10b8, #10131c33 32%, #0b0e1938 66%, #090b13bb)" }} />
-    </div></div>
-  );
+  }, [paused]);
+
+  return <canvas ref={surface} aria-hidden="true" style={{
+    position:"fixed", inset:0, width:"100%", height:"100%", zIndex:-1, pointerEvents:"none",
+    background:"radial-gradient(ellipse at 76% 42%, #342921 0%, transparent 47%), radial-gradient(ellipse at 26% 53%, #162129, transparent 55%), linear-gradient(180deg,#080d14,#16191d 54%,#0c0f14)"
+  }}/>;
 }
