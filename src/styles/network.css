@@ -113,3 +113,25 @@ html,body{background:#050d18!important;color:#eaf6ff;scroll-behavior:auto}body{f
   .network-app[data-open=true] .network-header nav button { min-height: 40px; flex-shrink: 0; }
   .network-app[data-open=true] .network-panel { top: 48px; }
 }
+
+.profile-console .profile-about {
+  width: fit-content;
+  gap: 16px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: #c7ebf4;
+  color: #10232e;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 #ffffff7a, 0 4px 14px #02090d40;
+}
+.profile-console .profile-about:hover { background: #e1f6fb; }
+.network-content .section-explorer label {
+  display: block;
+  margin: 14px 0 6px;
+  color: #c4d7e1;
+  font-size: 14px;
+}
+.network-content .explorer-actions button[hidden] { display: none; }
+.network-content .section p { text-align: start; font-weight: 400; }

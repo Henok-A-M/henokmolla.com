@@ -170,9 +170,12 @@ export function initLegacy(root:HTMLElement):()=>void{
   if (library) {
     const search = document.createElement("input");
     search.type = "search";
-    search.placeholder = "Search by project or tool";
-    search.setAttribute("aria-label", search.placeholder);
-    library.actions.before(search);
+    search.id = "portfolio-project-search";
+    const label = document.createElement("label");
+    label.htmlFor = search.id;
+    label.textContent = "Search by project or tool";
+    search.placeholder = "e.g. Wireshark";
+    library.actions.before(label, search);
     const folders = all<HTMLButtonElement>("[data-project]");
     const plannedList = root.querySelector<HTMLDetailsElement>(".planned-projects");
     const labsTitle = root.querySelector<HTMLElement>(".lab-group-title");
@@ -203,10 +206,17 @@ export function initLegacy(root:HTMLElement):()=>void{
       if (labsTitle) labsTitle.hidden = count === matchingPlans;
       if (!count) panels.forEach(panel => panel.hidden = true);
       else if (!selected || panels.every(panel => panel.hidden)) first?.click();
-      library.output.textContent = count ? count + (count === 1 ? " project" : " projects") : "No matching projects. Try another term or choose All.";
+      library.output.textContent = count ? count + (count === 1 ? " project" : " projects") : "No matching projects.";
+      clearSearch.hidden = count > 0;
       filters.forEach(button => button.setAttribute("aria-pressed", String(button.textContent === group)));
     };
     const filters = ["All", "Hands-on", "Planned"].map(name => action(library.actions, name, () => { group = name; filter(); }));
+    const clearSearch = action(library.actions, "Show all projects", () => {
+      search.value = "";
+      group = "All";
+      filter();
+      search.focus();
+    });
     search.addEventListener("input", filter, { signal });
     folders.forEach(button => button.addEventListener("click", () => {
       if (button.hidden) { search.value = ""; group = "All"; filter(); }
