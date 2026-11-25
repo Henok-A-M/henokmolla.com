@@ -135,3 +135,13 @@ html,body{background:#050d18!important;color:#eaf6ff;scroll-behavior:auto}body{f
 }
 .network-content .explorer-actions button[hidden] { display: none; }
 .network-content .section p { text-align: start; font-weight: 400; }
+
+/* Panel whitespace and controls do not participate in drag selection. */
+.network-panel, .network-header, .network-side, .network-footer {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.network-panel :is(p, h2, h3, h4, figcaption, code, pre, input, textarea) {
+  -webkit-user-select: text;
+  user-select: text;
+}

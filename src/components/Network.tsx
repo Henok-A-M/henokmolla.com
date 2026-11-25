@@ -28,6 +28,12 @@ export default function Network(){
  useEffect(()=>{const root=content.current;if(root)return initLegacy(root)},[]);
  useEffect(()=>{motion.current.paused=paused},[paused]);
  useEffect(()=>{const m=motion.current;m.active=active;m.targetZoom=active?2.15:1;if(active){const n=nodes.find(n=>n.id===active);if(n){m.targetYaw=m.yaw+Math.atan2(Math.sin(-n.lon-m.yaw),Math.cos(-n.lon-m.yaw));m.targetPitch=n.lat;}if(panel.current)panel.current.scrollTop=0;}},[active]);
+ // Discard a highlight from the previous view, including when returning by hash.
+ useEffect(() => {
+   const selection = window.getSelection();
+   if (selection?.rangeCount && !selection.isCollapsed) selection.removeAllRanges();
+ }, [active]);
+
  // Return to the same node after the camera pulls back.
  const returnToNetwork = () => {
    const index = nodes.findIndex(node => node.id === motion.current.active);
